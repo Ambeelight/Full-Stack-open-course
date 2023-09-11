@@ -1,4 +1,4 @@
-#0.4: New note diagram
+New note diagram
 
 sequenceDiagram
 participant browser
