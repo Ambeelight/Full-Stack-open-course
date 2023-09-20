@@ -1,30 +1,68 @@
 import { useState } from "react";
 
-const Display = (props) => (
+const Display = ({ value }) => (
     <div>
-        <strong>{props.value}</strong>
+        <h2>{value}</h2>
     </div>
 );
 
-const Button = (props) => (
-    <button onClick={props.handleClick}>{props.text}</button>
+const Button = ({ handleClick, text }) => (
+    <button onClick={handleClick}>{text}</button>
 );
 
+const StatisticLine = ({ text, value }) => {
+    return (
+        <tr>
+            <th style={{ textAlign: "left" }}>{text}</th>
+            <td>{value}</td>
+        </tr>
+    );
+};
+
+const Statistics = ({ good, neutral, bad, total }) => {
+    return (
+        <div>
+            <Display value="Statistics" />
+
+            {total === 0 ? (
+                <p>No feedback given</p>
+            ) : (
+                <table width="150">
+                    <tbody>
+                        <StatisticLine text="good" value={good} />
+                        <StatisticLine text="neutral" value={neutral} />
+                        <StatisticLine text="bad" value={bad} />
+                        <StatisticLine text="total" value={total} />
+                        <StatisticLine
+                            text="average"
+                            value={((good - bad) / total).toFixed(1)}
+                        />
+                        <StatisticLine
+                            text="positive"
+                            value={`${((good / total) * 100).toFixed(1)} %`}
+                        />
+                    </tbody>
+                </table>
+            )}
+        </div>
+    );
+};
+
 const App = () => {
-    // save clicks of each button to its own state
     const [good, setGood] = useState(0);
     const [neutral, setNeutral] = useState(0);
     const [bad, setBad] = useState(0);
+    const [total, setTotal] = useState(0);
 
     const setToValue = (setValue, newValue) => {
-        console.log("value now", newValue);
         setValue(newValue);
+        setTotal(total + 1);
     };
 
     return (
         <div>
             <Display value="Give feedback" />
-            <p>
+            <div>
                 <Button
                     handleClick={() => setToValue(setGood, good + 1)}
                     text="good"
@@ -37,8 +75,8 @@ const App = () => {
                     handleClick={() => setToValue(setBad, bad + 1)}
                     text="bad"
                 />
-            </p>
-            <Display value="Statistics" />
+            </div>
+            <Statistics good={good} neutral={neutral} bad={bad} total={total} />
         </div>
     );
 };
