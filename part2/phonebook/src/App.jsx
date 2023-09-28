@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Persons } from "./components/person";
 import { PersonForm } from "./components/personForm";
 import { Filter } from "./components/filter";
+import { Notification } from "./components/notification";
 import personServices from "./services/persons";
 
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
     const [newNumber, setNewNumber] = useState("");
     const [searchPerson, setSearchPerson] = useState("");
     const [filteredPersons, setFilteredPersons] = useState(persons);
+    const [message, setMessage] = useState(null);
 
     useEffect(() => {
         personServices.getAll().then((response) => {
@@ -17,6 +19,13 @@ const App = () => {
             setPersons(response);
         });
     }, []);
+
+    const showMessage = (message) => {
+        setMessage(message);
+        setTimeout(() => {
+            setMessage(null);
+        }, 3000);
+    };
 
     const addPerson = (event) => {
         event.preventDefault();
@@ -43,6 +52,23 @@ const App = () => {
                                 person.id === response.id ? response : person
                             )
                         );
+
+                        showMessage(
+                            `${personExists.name} has changed number on ${newNumber}!`
+                        );
+                    })
+                    .catch((error) => {
+                        showMessage(
+                            `Information of ${personExists.name} has already been removed from the server`
+                        );
+                        setPersons(
+                            persons.filter((p) => p.id !== personExists.id)
+                        );
+                        setFilteredPersons(
+                            filteredPersons.filter(
+                                (p) => p.id !== personExists.id
+                            )
+                        );
                     });
             }
         } else {
@@ -51,6 +77,8 @@ const App = () => {
                 name: newName,
                 number: newNumber,
             };
+
+            showMessage(`Added ${newName} to the phonebook!`);
 
             personServices.create(nameObj).then((response) => {
                 setPersons(persons.concat(response));
@@ -90,6 +118,8 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+
+            <Notification message={message} />
 
             <Filter
                 searchPerson={searchPerson}
