@@ -1,13 +1,47 @@
-import { useState } from 'react'
-import './App.css'
+import { useState, useEffect } from "react";
+import { Search } from "./components/search";
+import { Countries } from "./components/countries";
+import countryServices from "./services/countries";
 
-function App() {
+const App = () => {
+    const [countries, setCountries] = useState([]);
+    const [searchCountry, setSearchCountry] = useState("");
+    const [filteredCountries, setFilteredCountries] = useState([]);
 
-  return (
-    <>
-      
-    </>
-  )
-}
+    useEffect(() => {
+        countryServices
+            .getAll()
+            .then((res) => {
+                console.log("countries", res);
+                setCountries(res);
+            })
+            .catch((error) => {
+                console.error("Error fetching data from the server:", error);
+            });
+    }, []);
 
-export default App
+    const handleSearchChange = (event) => {
+        event.preventDefault();
+
+        const searchItem = event.target.value.toLowerCase();
+        setSearchCountry(searchItem);
+
+        const filteredList = countries.filter(({ name }) =>
+            name.common.toLowerCase().includes(searchItem)
+        );
+        setFilteredCountries(filteredList);
+    };
+
+    return (
+        <div>
+            <Search
+                searchCountry={searchCountry}
+                handleSearchChange={handleSearchChange}
+            />
+
+            <Countries countries={filteredCountries} />
+        </div>
+    );
+};
+
+export default App;
