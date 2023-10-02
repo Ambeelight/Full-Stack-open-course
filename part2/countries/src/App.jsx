@@ -1,23 +1,22 @@
 import { useState, useEffect } from "react";
 import { Search } from "./components/search";
 import { Countries } from "./components/countries";
+import { CountryInfo } from "./components/countryInfo";
 import countryServices from "./services/countries";
 
 const App = () => {
     const [countries, setCountries] = useState([]);
     const [searchCountry, setSearchCountry] = useState("");
     const [filteredCountries, setFilteredCountries] = useState([]);
+    const [countryInfo, setCountryInfo] = useState(null);
 
     useEffect(() => {
         countryServices
             .getAll()
-            .then((res) => {
-                console.log("countries", res);
-                setCountries(res);
-            })
-            .catch((error) => {
-                console.error("Error fetching data from the server:", error);
-            });
+            .then((res) => setCountries(res))
+            .catch((error) =>
+                console.error("Error fetching data from the server:", error)
+            );
     }, []);
 
     const handleSearchChange = (event) => {
@@ -29,7 +28,18 @@ const App = () => {
         const filteredList = countries.filter(({ name }) =>
             name.common.toLowerCase().includes(searchItem)
         );
-        setFilteredCountries(filteredList);
+
+        if (filteredList.length > 10) {
+            setCountryInfo("Too many matches, specify another filter");
+            setFilteredCountries([]);
+        } else if (filteredList.length === 1) {
+            setCountryInfo(filteredList[0]);
+            console.log("country data", filteredList[0]);
+            setFilteredCountries([]);
+        } else {
+            setCountryInfo(null);
+            setFilteredCountries(filteredList);
+        }
     };
 
     return (
@@ -38,8 +48,11 @@ const App = () => {
                 searchCountry={searchCountry}
                 handleSearchChange={handleSearchChange}
             />
-
-            <Countries countries={filteredCountries} />
+            {countryInfo === null ? (
+                <Countries countries={filteredCountries} />
+            ) : (
+                <CountryInfo countryInfo={countryInfo} />
+            )}
         </div>
     );
 };

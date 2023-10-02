@@ -1,9 +1,11 @@
 export const Countries = ({ countries }) => {
     return (
-        <ul>
-            {countries.map((country) => (
-                <li key={country.tld}>{country.name.common}</li>
-            ))}
-        </ul>
+        <div>
+            <ul>
+                {countries.map((country, index) => (
+                    <li key={index}>{country.name.common}</li>
+                ))}
+            </ul>
+        </div>
     );
 };
