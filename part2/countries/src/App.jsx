@@ -42,6 +42,8 @@ const App = () => {
         }
     };
 
+    const handleCountryShow = (country) => setSelectedCountry(country);
+
     return (
         <div>
             <Search
@@ -49,7 +51,10 @@ const App = () => {
                 handleSearchChange={handleSearchChange}
             />
             {countryInfo === null ? (
-                <Countries countries={filteredCountries} />
+                <Countries
+                    countries={filteredCountries}
+                    handleCountryShow={handleCountryShow}
+                />
             ) : (
                 <CountryInfo countryInfo={countryInfo} />
             )}
