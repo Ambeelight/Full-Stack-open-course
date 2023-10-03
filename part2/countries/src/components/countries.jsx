@@ -1,4 +1,6 @@
-export const Countries = ({ countries, handleCountryShow }) => {
+import { CountryInfo } from "./countryInfo";
+
+const Countries = ({ countries, handleCountryShow, selectedCountry }) => {
     return (
         <div>
             <ul>
@@ -8,9 +10,16 @@ export const Countries = ({ countries, handleCountryShow }) => {
                         <button onClick={() => handleCountryShow(country)}>
                             show
                         </button>
+                        {selectedCountry &&
+                            selectedCountry.name.common ===
+                                country.name.common && (
+                                <CountryInfo countryInfo={selectedCountry} />
+                            )}
                     </li>
                 ))}
             </ul>
         </div>
     );
 };
+
+export default Countries;

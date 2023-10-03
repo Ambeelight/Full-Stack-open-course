@@ -1,8 +1,4 @@
 export const CountryInfo = ({ countryInfo }) => {
-    if (typeof countryInfo === "string") {
-        return <p>{countryInfo}</p>;
-    }
-
     return (
         <div>
             <h2>{countryInfo.name.common}</h2>

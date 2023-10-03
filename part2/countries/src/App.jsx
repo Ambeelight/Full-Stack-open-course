@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search } from "./components/search";
-import { Countries } from "./components/countries";
+import Countries from "./components/countries";
 import { CountryInfo } from "./components/countryInfo";
 import countryServices from "./services/countries";
 
@@ -9,6 +9,7 @@ const App = () => {
     const [searchCountry, setSearchCountry] = useState("");
     const [filteredCountries, setFilteredCountries] = useState([]);
     const [countryInfo, setCountryInfo] = useState(null);
+    const [selectedCountry, setSelectedCountry] = useState(null);
 
     useEffect(() => {
         countryServices
@@ -42,7 +43,10 @@ const App = () => {
         }
     };
 
-    const handleCountryShow = (country) => setSelectedCountry(country);
+    const handleCountryShow = (country) => {
+        console.log(country);
+        setSelectedCountry(country);
+    };
 
     return (
         <div>
@@ -54,7 +58,10 @@ const App = () => {
                 <Countries
                     countries={filteredCountries}
                     handleCountryShow={handleCountryShow}
+                    selectedCountry={selectedCountry}
                 />
+            ) : typeof countryInfo === "string" ? (
+                <p>{countryInfo}</p>
             ) : (
                 <CountryInfo countryInfo={countryInfo} />
             )}
