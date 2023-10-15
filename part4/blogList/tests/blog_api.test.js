@@ -39,9 +39,46 @@ test('URL successfully creates a new blog post', async () => {
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
+
   const blogs = await api.get('/api/blogs')
 
   expect(blogs.body).toHaveLength(initialBlogCount + 1)
+})
+
+test('responds with 0 if likes property is missing', async () => {
+  const newBlog = {
+    title: 'Likes missing',
+    author: 'Test Likes',
+    url: 'www.wherearelikes.com',
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  expect(response.body.likes).toBe(0)
+})
+
+test('responds with 400 Bad Request if title is missing', async () => {
+  const newBlog = {
+    author: 'Test Title',
+    url: 'www.checktitle.com',
+    likes: 1,
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
+})
+
+test('responds with 400 Bad Request if url is missing', async () => {
+  const newBlog = {
+    title: 'Test URL',
+    author: 'Test URL',
+    likes: 1,
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
 })
 
 afterAll(async () => {
