@@ -23,15 +23,30 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
-  const blog = await Blog.findByIdAndRemove(request.params.id)
+  const body = await Blog.findByIdAndRemove(request.params.id)
 
-  if (!blog) return response.status(404).json({ error: 'Blog not found' })
+  if (!body) return response.status(404).json({ error: 'Blog not found' })
 
   response.status(204).end()
 })
 
 blogsRouter.put('/:id', async (request, response) => {
-  const blog = await Blog.findByIdAndUpdate(request.params.id)
+  const body = await request.body
+
+  if (!body || !body.likes)
+    return response
+      .status(400)
+      .json({ error: 'Request body is empty or missing the likes property' })
+
+  const blog = {
+    likes: body.likes,
+  }
+
+  const result = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+
+  if (!result) return response.status(404).json({ error: 'Blog not found' })
+
+  response.status(200).json(result)
 })
 
 module.exports = blogsRouter

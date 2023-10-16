@@ -104,6 +104,48 @@ describe('DELETE method', () => {
   })
 })
 
+describe('PUT method', () => {
+  test('blog updated successfully', async () => {
+    const newBlog = new Blog({
+      title: 'Test Update',
+      author: 'Updated',
+      url: 'https://updateme.com',
+      likes: 3,
+    })
+
+    const saveBlog = await newBlog.save()
+
+    const updatedLikes = 5
+
+    const result = await api
+      .put(`/api/blogs/${saveBlog.id}`)
+      .send({ likes: updatedLikes })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+    console.log('updted blog', result)
+    expect(result.body.likes).toBe(updatedLikes)
+  })
+
+  test('responds with 404 Not Found if blog not found', async () => {
+    const nonExistentId = '000000000000000000000000'
+    const updatedLikes = 5
+
+    await api.put(`/api/blogs/${nonExistentId}`).send({ likes: updatedLikes }).expect(404)
+  })
+
+  test('responds with 400 if likes property is missing', async () => {
+    const blog = new Blog({
+      title: 'Missing Likes',
+      author: 'Test Author',
+      url: 'www.missing-likes.com',
+      likes: 5,
+    })
+    const savedBlog = await blog.save()
+
+    await api.put(`/api/blogs/${savedBlog.id}`).send({}).expect(400)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
