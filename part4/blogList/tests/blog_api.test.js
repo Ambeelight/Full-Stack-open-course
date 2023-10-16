@@ -81,6 +81,29 @@ test('responds with 400 Bad Request if url is missing', async () => {
   await api.post('/api/blogs').send(newBlog).expect(400)
 })
 
+describe('DELETE method', () => {
+  test('blog deleted successfully', async () => {
+    const newBlog = new Blog({
+      title: 'Test Delete',
+      author: 'Deleted',
+      url: 'https://deletedblog.com',
+      likes: 3,
+    })
+    const savedBlog = await newBlog.save()
+
+    await api.delete(`/api/blogs/${savedBlog.id}`).expect(204)
+
+    const deletedBlog = await Blog.findById(savedBlog.id)
+    expect(deletedBlog).toBeNull()
+  })
+
+  test('responds with 404 Not Found if blog not found', async () => {
+    const nonExistentId = '000000000000000000000000'
+
+    await api.delete(`/api/blogs/${nonExistentId}`).expect(404)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
