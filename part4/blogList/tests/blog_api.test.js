@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -143,6 +144,28 @@ describe('PUT method', () => {
     const savedBlog = await blog.save()
 
     await api.put(`/api/blogs/${savedBlog.id}`).send({}).expect(400)
+  })
+})
+
+describe('Check user login data', () => {
+  test('responds with 400 Bad Request if user login is too short', async () => {
+    const user = {
+      username: 'Si',
+      name: 'Sisi',
+      password: '123si',
+    }
+
+    await api.post('/api/users').send(user).expect(400)
+  })
+
+  test('responds with 400 Bad Request if user password is too short', async () => {
+    const user = {
+      username: 'Sisi',
+      name: 'Sisi',
+      password: '12',
+    }
+
+    await api.post('/api/users').send(user).expect(400)
   })
 })
 
