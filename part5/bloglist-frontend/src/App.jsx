@@ -98,6 +98,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <h4>{user.name} logged in</h4>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
