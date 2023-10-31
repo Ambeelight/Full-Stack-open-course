@@ -115,6 +115,7 @@ const App = () => {
 
       const returnedBlog = await blogService.create(blogObject)
       setBlogs((blogs) => [...blogs, returnedBlog])
+      returnedBlog.user = { name: user.name }
     } catch (error) {
       console.error('Error adding a blog:', error)
     }
@@ -123,7 +124,7 @@ const App = () => {
     return (
       <div>
         <Togglable buttonLabel="Create" ref={blogFormRef}>
-          <BlogForm createBlog={addBlog} showNotification={showNotification} />
+          <BlogForm createBlog={addBlog} showNotification={showNotification} user={user} />
         </Togglable>
       </div>
     )
@@ -152,7 +153,7 @@ const App = () => {
       <h2>create new</h2>
       {blogForm()}
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} user={user} />
+        <Blog key={blog.id} blog={blog} />
       ))}
     </div>
   )

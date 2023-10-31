@@ -8,7 +8,7 @@ const blogStyle = {
   marginBottom: 5,
 }
 
-const Blog = ({ blog, user }) => {
+const Blog = ({ blog }) => {
   const [showData, setShowData] = useState(false)
 
   const toggleData = () => setShowData(!showData)
@@ -26,7 +26,7 @@ const Blog = ({ blog, user }) => {
           {blog.likes}
           <button>like</button>
           <br />
-          {user.name}
+          Added by {blog.user.name}
         </div>
       )}
     </div>
