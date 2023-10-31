@@ -119,7 +119,6 @@ const App = () => {
       console.error('Error adding a blog:', error)
     }
   }
-
   const blogForm = () => {
     return (
       <div>
@@ -153,7 +152,7 @@ const App = () => {
       <h2>create new</h2>
       {blogForm()}
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} user={user} />
       ))}
     </div>
   )
