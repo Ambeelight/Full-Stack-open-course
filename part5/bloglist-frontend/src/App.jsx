@@ -120,6 +120,7 @@ const App = () => {
       console.error('Error adding a blog:', error)
     }
   }
+
   const blogForm = () => {
     return (
       <div>
@@ -128,6 +129,20 @@ const App = () => {
         </Togglable>
       </div>
     )
+  }
+
+  const likeHandler = async (blog) => {
+    try {
+      const updatedBlog = await blogService.update(blog.id, {
+        ...blog,
+        likes: blog.likes + 1,
+      })
+
+      setBlogs((blogs) => blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog)))
+      updatedBlog.user = { name: user.name }
+    } catch (error) {
+      console.log('Error in adding a like', error)
+    }
   }
 
   if (user === null) {
@@ -153,7 +168,7 @@ const App = () => {
       <h2>create new</h2>
       {blogForm()}
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeHandler={likeHandler} />
       ))}
     </div>
   )

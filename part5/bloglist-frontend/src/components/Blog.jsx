@@ -8,7 +8,7 @@ const blogStyle = {
   marginBottom: 5,
 }
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeHandler }) => {
   const [showData, setShowData] = useState(false)
 
   const toggleData = () => setShowData(!showData)
@@ -21,10 +21,10 @@ const Blog = ({ blog }) => {
       </div>
       {showData && (
         <div>
-          {blog.url}
+          Website: {blog.url}
           <br />
-          {blog.likes}
-          <button>like</button>
+          Likes: {blog.likes}
+          <button onClick={() => likeHandler(blog)}>like</button>
           <br />
           Added by {blog.user.name}
         </div>
