@@ -8,7 +8,12 @@ const blogStyle = {
   marginBottom: 5,
 }
 
-const Blog = ({ blog, likeHandler }) => {
+const deleteBtnStyle = {
+  backgroundColor: '#526FFF',
+  color: 'white',
+}
+
+const Blog = ({ blog, likeHandler, deleteBlog, user }) => {
   const [showData, setShowData] = useState(false)
 
   const toggleData = () => setShowData(!showData)
@@ -27,6 +32,14 @@ const Blog = ({ blog, likeHandler }) => {
           <button onClick={() => likeHandler(blog)}>like</button>
           <br />
           Added by {blog.user.name}
+          <br />
+          {blog.user.name === user.name ? (
+            <button onClick={() => deleteBlog(blog)} style={deleteBtnStyle}>
+              remove
+            </button>
+          ) : (
+            ''
+          )}
         </div>
       )}
     </div>

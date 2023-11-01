@@ -145,6 +145,21 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (blog) => {
+    const confirmDeleting = window.confirm(`Delete blog "${blog.title}" by ${blog.author}?`)
+    if (!confirmDeleting) {
+      return
+    }
+
+    try {
+      await blogService.remove(blog.id)
+
+      setBlogs((blogs) => blogs.filter((b) => b.id !== blog.id))
+    } catch (error) {
+      console.log('Error in deleting a blog', error)
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -170,7 +185,7 @@ const App = () => {
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} likeHandler={likeHandler} />
+          <Blog key={blog.id} blog={blog} likeHandler={likeHandler} deleteBlog={deleteBlog} user={user} />
         ))}
     </div>
   )
