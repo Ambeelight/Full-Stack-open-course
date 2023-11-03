@@ -19,7 +19,7 @@ const Blog = ({ blog, likeHandler, deleteBlog, user }) => {
   const toggleData = () => setShowData(!showData)
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div>
         {blog.title} {blog.author}
         <button onClick={toggleData}>{showData ? 'Hide' : 'Show'}</button>
