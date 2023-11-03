@@ -25,7 +25,7 @@ const Blog = ({ blog, likeHandler, deleteBlog, user }) => {
         <button onClick={toggleData}>{showData ? 'Hide' : 'Show'}</button>
       </div>
       {showData && (
-        <div>
+        <div className="blog__hided">
           Website: {blog.url}
           <br />
           Likes: {blog.likes}
