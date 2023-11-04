@@ -43,6 +43,7 @@ const BlogForm = ({ createBlog, showNotification }) => {
             name="title"
             onChange={(target) => setNewBlog({ ...newBlog, title: target.target.value })}
             autoComplete="off"
+            placeholder="write title"
           />
         </div>
         <div>
@@ -53,6 +54,7 @@ const BlogForm = ({ createBlog, showNotification }) => {
             name="author"
             onChange={(target) => setNewBlog({ ...newBlog, author: target.target.value })}
             autoComplete="off"
+            placeholder="write author"
           />
         </div>
         <div>
@@ -63,6 +65,7 @@ const BlogForm = ({ createBlog, showNotification }) => {
             name="url"
             onChange={(target) => setNewBlog({ ...newBlog, url: target.target.value })}
             autoComplete="off"
+            placeholder="write url"
           />
         </div>
         <input type="submit" value="Create" />
