@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import { Notification } from './components/Notification'
+import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
@@ -8,8 +9,6 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -45,22 +44,17 @@ const App = () => {
     }, 5000)
   }
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    console.log('logging in with', username, password)
+  const loginFormRef = useRef()
 
+  const handleLogin = async (credentials) => {
     try {
-      const user = await loginService.login({
-        username,
-        password,
-      })
+      loginFormRef.current.toggleVisibility()
+      const user = await loginService.login(credentials)
 
       window.sessionStorage.setItem('loggedBloglistUser', JSON.stringify(user))
       blogService.setToken(user.token)
 
       setUser(user)
-      setUsername('')
-      setPassword('')
     } catch (exception) {
       showNotification({ message: 'Wrong username or password', type: 'error' })
       setErrorMessage('Wrong credentials')
@@ -77,35 +71,7 @@ const App = () => {
     window.sessionStorage.removeItem('loggedBloglistUser')
 
     setUser(null)
-    setUsername('')
-    setPassword('')
   }
-
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-          autoComplete="off"
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-          autoComplete="off"
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
 
   const blogFormRef = useRef()
 
@@ -167,7 +133,9 @@ const App = () => {
         {notification && (
           <Notification message={notification.message} classType={notification.type} />
         )}
-        {loginForm()}
+        <Togglable buttonLabel="log in" ref={loginFormRef}>
+          <LoginForm createLogin={handleLogin} />
+        </Togglable>
       </div>
     )
   }
