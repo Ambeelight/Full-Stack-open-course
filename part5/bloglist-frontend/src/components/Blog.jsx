@@ -29,12 +29,14 @@ const Blog = ({ blog, likeHandler, deleteBlog, user }) => {
           Website: {blog.url}
           <br />
           Likes: {blog.likes}
-          <button onClick={() => likeHandler(blog)}>like</button>
+          <button id="like" onClick={() => likeHandler(blog)}>
+            like
+          </button>
           <br />
           Added by {blog.user.name}
           <br />
           {blog.user.name === user.name ? (
-            <button onClick={() => deleteBlog(blog)} style={deleteBtnStyle}>
+            <button id="removeBlog" onClick={() => deleteBlog(blog)} style={deleteBtnStyle}>
               remove
             </button>
           ) : (

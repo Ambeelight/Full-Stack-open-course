@@ -147,7 +147,7 @@ const App = () => {
         <Notification message={notification.message} classType={notification.type} />
       )}
       <h4>{user.name} logged in</h4>
-      <button onClick={handleLogout}>logout</button>
+      <button id="logout" onClick={handleLogout}>logout</button>
       <h2>create new</h2>
       {blogForm()}
       {blogs

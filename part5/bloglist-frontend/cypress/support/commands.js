@@ -23,3 +23,11 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('createUser', ({ name, username, password }) => {
+  cy.request('POST', `${Cypress.env('BACKEND')}/users/`, { name, username, password })
+  cy.visit('')
+})
+
+// Cypress.Commands.add('addBlog', ({ title, author, url }) => {
+// })
