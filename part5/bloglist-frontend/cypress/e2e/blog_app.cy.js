@@ -62,14 +62,14 @@ describe('Blog app', () => {
 
       it('A new blog can be liked', function () {
         cy.contains('Show').click()
-        cy.get('#like').click()
+        cy.get('.like').click()
 
         cy.contains('Likes: 1')
       })
 
       it('A blog can be deleted by the user', function () {
         cy.contains('Show').click()
-        cy.get('#removeBlog').click()
+        cy.get('.removeBlog').click()
       })
 
       it('Only the blog`s author can see remove button', function () {
@@ -83,6 +83,28 @@ describe('Blog app', () => {
         cy.contains('Show').click()
 
         cy.get('.blog').should('not.contain', 'remove')
+      })
+    })
+
+    describe('Sorting by likes', function () {
+      beforeEach(function () {
+        cy.createBlog({ title: 'newBlogOne', author: 'user1', url: 'www.newblogone.com' })
+        cy.createBlog({ title: 'newBlogTwo', author: 'user2', url: 'www.newblogtwo.com' })
+        cy.createBlog({ title: 'newBlogThree', author: 'user3', url: 'www.newblogthree.com' })
+      })
+
+      it('Blogs sorted by likes', function () {
+        cy.contains('newBlogThree').as('topBlog')
+        cy.get('@topBlog').contains('Show').click()
+        cy.get('@topBlog').get('.like').click().wait(200).click()
+
+        cy.contains('newBlogOne').as('secondTopBlog')
+        cy.get('@secondTopBlog').contains('Show').click()
+        cy.get('@secondTopBlog').get('.like').click({ multiple: true })
+
+        cy.get('.blog').eq(0).should('contain', 'newBlogThree')
+        cy.get('.blog').eq(1).should('contain', 'newBlogOne')
+        cy.get('.blog').eq(2).should('contain', 'newBlogTwo')
       })
     })
   })

@@ -29,5 +29,10 @@ Cypress.Commands.add('createUser', ({ name, username, password }) => {
   cy.visit('')
 })
 
-// Cypress.Commands.add('addBlog', ({ title, author, url }) => {
-// })
+Cypress.Commands.add('createBlog', ({ title, author, url }) => {
+  cy.contains('Create').click()
+  cy.get('#title').type(title)
+  cy.get('#author').type(author)
+  cy.get('#url').type(url)
+  cy.get('#createBlog').click()
+})

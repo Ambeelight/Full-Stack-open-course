@@ -26,17 +26,15 @@ const Blog = ({ blog, likeHandler, deleteBlog, user }) => {
       </div>
       {showData && (
         <div className="blog__hided">
-          Website: {blog.url}
-          <br />
+          Website: {blog.url} <br />
           Likes: {blog.likes}
-          <button id="like" onClick={() => likeHandler(blog)}>
+          <button className="like" onClick={() => likeHandler(blog)}>
             like
-          </button>
+          </button>{' '}
           <br />
-          Added by {blog.user.name}
-          <br />
+          Added by {blog.user.name} <br />
           {blog.user.name === user.name ? (
-            <button id="removeBlog" onClick={() => deleteBlog(blog)} style={deleteBtnStyle}>
+            <button className="removeBlog" onClick={() => deleteBlog(blog)} style={deleteBtnStyle}>
               remove
             </button>
           ) : (
