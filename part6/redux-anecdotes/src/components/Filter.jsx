@@ -5,6 +5,7 @@ const Filter = () => {
   const dispatch = useDispatch()
 
   const handleChange = (event) => {
+    // event.preventDefault()
     const filter = event.target.value
     dispatch(filterChange(filter))
   }

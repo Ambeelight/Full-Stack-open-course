@@ -9,7 +9,7 @@ const AnecdoteList = () => {
     return anecdotes.filter((a) => a.content.toLowerCase().includes(filter.toLowerCase()))
   })
 
-  const vote = (anecdote) => dispatch(voteAnecdote(anecdote.id))
+  const vote = (anecdote) => dispatch(voteAnecdote({ id: anecdote.id }))
 
   const Anecdote = ({ anecdote }) => {
     return (
