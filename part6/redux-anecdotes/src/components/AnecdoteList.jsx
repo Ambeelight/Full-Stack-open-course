@@ -5,11 +5,11 @@ import { voteAnecdote } from '../reducers/anecdoteReducer'
 const AnecdoteList = () => {
   const dispatch = useDispatch()
   const anecdotes = useSelector(({ anecdotes, filter }) => {
-    if (filter === 'ALL') return anecdotes
+    if (filter === 'ALL') return anecdotes // Do we really need "ALL" state?
     return anecdotes.filter((a) => a.content.toLowerCase().includes(filter.toLowerCase()))
   })
 
-  const vote = (anecdote) => dispatch(voteAnecdote({ id: anecdote.id }))
+  const vote = (anecdote) => dispatch(voteAnecdote(anecdote.id))
 
   const Anecdote = ({ anecdote }) => {
     return (
