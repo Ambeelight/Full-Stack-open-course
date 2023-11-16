@@ -1,15 +1,18 @@
 /* eslint-disable react/prop-types */
 import { useDispatch, useSelector } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
+import { showNotification } from '../reducers/notificationReducer'
 
 const AnecdoteList = () => {
   const dispatch = useDispatch()
   const anecdotes = useSelector(({ anecdotes, filter }) => {
-    if (filter === 'ALL') return anecdotes // Do we really need "ALL" state?
     return anecdotes.filter((a) => a.content.toLowerCase().includes(filter.toLowerCase()))
   })
 
-  const vote = (anecdote) => dispatch(voteAnecdote(anecdote.id))
+  const vote = (anecdote) => {
+    dispatch(voteAnecdote(anecdote.id))
+    dispatch(showNotification(`you voted '${anecdote.content}'`, 5))
+  }
 
   const Anecdote = ({ anecdote }) => {
     return (
