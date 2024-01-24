@@ -7,11 +7,15 @@ import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+import { useDispatch, useSelector } from 'react-redux'
+import { showNotification } from './reducers/notificationReducer'
+
 const App = () => {
+  const dispatch = useDispatch()
+  const notification = useSelector((state) => state.notification)
+
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -37,11 +41,9 @@ const App = () => {
     }
   }, [])
 
-  const showNotification = ({ message, type }) => {
-    setNotification({ message, type })
-    setTimeout(() => {
-      setNotification(null)
-    }, 5000)
+  const showAlert = ({ message, type }) => {
+    console.log('Calling showAlert with:', { message, type })
+    dispatch(showNotification({ message, type }, 5))
   }
 
   const loginFormRef = useRef()
@@ -56,11 +58,7 @@ const App = () => {
 
       setUser(user)
     } catch (exception) {
-      showNotification({ message: 'Wrong username or password', type: 'error' })
-      setErrorMessage('Wrong credentials')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      showAlert({ message: 'Wrong username or password', type: 'error' })
     }
   }
 
@@ -90,8 +88,8 @@ const App = () => {
   const blogForm = () => {
     return (
       <div>
-        <Togglable buttonLabel="Create" ref={blogFormRef}>
-          <BlogForm createBlog={addBlog} showNotification={showNotification} />
+        <Togglable buttonLabel='Create' ref={blogFormRef}>
+          <BlogForm createBlog={addBlog} showNotification={showAlert} />
         </Togglable>
       </div>
     )
@@ -104,7 +102,9 @@ const App = () => {
         likes: blog.likes + 1,
       })
 
-      setBlogs((blogs) => blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog)))
+      setBlogs((blogs) =>
+        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+      )
       updatedBlog.user = { name: user.name }
     } catch (error) {
       console.log('Error in adding a like', error)
@@ -112,7 +112,9 @@ const App = () => {
   }
 
   const deleteBlog = async (blog) => {
-    const confirmDeleting = window.confirm(`Delete blog "${blog.title}" by ${blog.author}?`)
+    const confirmDeleting = window.confirm(
+      `Delete blog "${blog.title}" by ${blog.author}?`
+    )
     if (!confirmDeleting) {
       return
     }
@@ -130,24 +132,24 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        {notification && (
-          <Notification message={notification.message} classType={notification.type} />
-        )}
-        <Togglable buttonLabel="log in" ref={loginFormRef}>
+        {notification && <Notification />}
+        <Togglable buttonLabel='log in' ref={loginFormRef}>
           <LoginForm createLogin={handleLogin} />
         </Togglable>
       </div>
     )
   }
 
+  console.log('Notification state:', notification)
+
   return (
     <div>
       <h2>blogs</h2>
-      {notification && (
-        <Notification message={notification.message} classType={notification.type} />
-      )}
+      {notification && <Notification />}
       <h4>{user.name} logged in</h4>
-      <button id="logout" onClick={handleLogout}>logout</button>
+      <button id='logout' onClick={handleLogout}>
+        logout
+      </button>
       <h2>create new</h2>
       {blogForm()}
       {blogs
