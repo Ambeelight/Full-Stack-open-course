@@ -1,29 +1,21 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
 import { useDispatch } from 'react-redux'
 import { showNotification } from '../reducers/notificationReducer'
+import { createBlog } from '../reducers/blogReducer'
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = () => {
   const dispatch = useDispatch()
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    url: '',
-  })
 
   const handleNewBlog = async (event) => {
     event.preventDefault()
 
     try {
       const newBlogData = {
-        title: newBlog.title,
-        author: newBlog.author,
-        url: newBlog.url,
+        title: event.target.value.title,
+        author: event.target.value.author,
+        url: event.target.value.url,
       }
 
-      createBlog(newBlogData)
-      setNewBlog({ title: '', author: '', url: '' })
-
+      dispatch(createBlog(newBlogData))
       dispatch(
         showNotification(
           {
@@ -45,6 +37,9 @@ const BlogForm = ({ createBlog }) => {
         )
       )
     }
+    event.target.title.value = ''
+    event.target.author.value = ''
+    event.target.url.value = ''
   }
 
   return (
@@ -57,11 +52,7 @@ const BlogForm = ({ createBlog }) => {
           <input
             id='title'
             type='text'
-            value={newBlog.title}
             name='title'
-            onChange={(target) =>
-              setNewBlog({ ...newBlog, title: target.target.value })
-            }
             autoComplete='off'
             placeholder='write title'
           />
@@ -71,11 +62,7 @@ const BlogForm = ({ createBlog }) => {
           <input
             id='author'
             type='text'
-            value={newBlog.author}
             name='author'
-            onChange={(target) =>
-              setNewBlog({ ...newBlog, author: target.target.value })
-            }
             autoComplete='off'
             placeholder='write author'
           />
@@ -85,11 +72,7 @@ const BlogForm = ({ createBlog }) => {
           <input
             id='url'
             type='text'
-            value={newBlog.url}
             name='url'
-            onChange={(target) =>
-              setNewBlog({ ...newBlog, url: target.target.value })
-            }
             autoComplete='off'
             placeholder='write url'
           />
@@ -99,10 +82,4 @@ const BlogForm = ({ createBlog }) => {
     </div>
   )
 }
-
-BlogForm.propTypes = {
-  createBlog: PropTypes.func.isRequired,
-  showNotification: PropTypes.func.isRequired,
-}
-
 export default BlogForm
