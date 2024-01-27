@@ -1,52 +1,50 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { setLogin } from '../reducers/loginReducer'
+import { showNotification } from '../reducers/notificationReducer'
 
-const LoginForm = ({ createLogin }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+const LoginForm = () => {
+  const dispatch = useDispatch()
 
   const handleLogin = async (event) => {
     event.preventDefault()
-
-    createLogin({ username, password })
-
-    setUsername('')
-    setPassword('')
+    try {
+      const credentials = {
+        username: event.target.username.value,
+        password: event.target.password.value,
+      }
+      dispatch(setLogin(credentials))
+    } catch (error) {
+      dispatch(
+        showNotification(
+          { message: 'Wrong username or password', type: 'error' },
+          5
+        )
+      )
+    }
+    event.target.username.value = ''
+    event.target.password.value = ''
   }
 
   return (
     <form onSubmit={handleLogin}>
       <div>
         username
-        <input
-          id="username"
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-          autoComplete="off"
-        />
+        <input id='username' type='text' name='Username' autoComplete='off' />
       </div>
       <div>
         password
         <input
-          id="password"
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-          autoComplete="off"
+          id='password'
+          type='password'
+          name='Password'
+          autoComplete='off'
         />
       </div>
-      <button id="login-btn" type="submit">
+      <button id='login-btn' type='submit'>
         log in
       </button>
     </form>
   )
-}
-
-LoginForm.propTypes = {
-  createLogin: PropTypes.func.isRequired,
 }
 
 export default LoginForm
