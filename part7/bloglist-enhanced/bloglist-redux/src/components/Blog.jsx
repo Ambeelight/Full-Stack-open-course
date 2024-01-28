@@ -33,7 +33,7 @@ const Blog = ({ blog, user }) => {
             message: `A like for the blog '${blog.title}' by '${blog.author} has been added'`,
             type: 'success',
           },
-          5
+          3
         )
       )
     } catch (error) {

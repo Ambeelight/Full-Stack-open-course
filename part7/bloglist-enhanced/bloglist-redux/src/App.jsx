@@ -18,7 +18,6 @@ const App = () => {
   const loggedIn = useSelector((state) => state.login)
   // const users = useSelector((state) => state.users)
 
-  //Problem with authorization check for fetching blogs
   useEffect(() => {
     dispatch(loggedUser()), dispatch(fetchUsers())
   }, [dispatch])
@@ -39,7 +38,7 @@ const App = () => {
 
   const loginFormRef = useRef()
 
-  if (loggedIn === null) {
+  if (!loggedIn) {
     return (
       <div>
         <h2>Log in to application</h2>
@@ -50,7 +49,7 @@ const App = () => {
       </div>
     )
   }
-  console.log('Blogs', blogs)
+
   return (
     <div>
       <h2>blogs</h2>
