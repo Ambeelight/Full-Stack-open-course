@@ -17,9 +17,10 @@ export const { setLogin } = loginSlice.actions
 export const loggedUser = () => {
   return async (dispatch) => {
     const loggedUserJSON = window.sessionStorage.getItem('loggedBloglistUser')
+
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      loginService.setToken(user.token)
+      blogService.setToken(user.token)
       dispatch(setLogin(user))
     }
   }

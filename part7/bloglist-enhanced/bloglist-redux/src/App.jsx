@@ -1,117 +1,71 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import { Notification } from './components/Notification'
 import LoginForm from './components/LoginForm'
+import LogoutButton from './components/LogoutButton'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
-import blogService from './services/blogs'
-import loginService from './services/login'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { showNotification } from './reducers/notificationReducer'
 import { fetchBlogs } from './reducers/blogReducer'
+import { loggedUser } from './reducers/loginReducer'
+import { fetchUsers } from './reducers/userReducer'
 
 const App = () => {
   const dispatch = useDispatch()
 
   const blogs = useSelector((state) => state.blogs)
+  const loggedIn = useSelector((state) => state.login)
+  // const users = useSelector((state) => state.users)
 
-  const [user, setUser] = useState(null)
-
+  //Problem with authorization check for fetching blogs
   useEffect(() => {
-    dispatch(fetchBlogs())
+    dispatch(loggedUser()), dispatch(fetchUsers())
   }, [dispatch])
 
-  // useEffect(() => {
-  //   const fetchBlogs = async () => {
-  //     if (user) {
-  //       try {
-  //         const blogs = await blogService.getAll()
-  //         setBlogs(blogs)
-  //       } catch (error) {
-  //         console.error('Error fetching blogs:', error.message)
-  //       }
-  //     }
-  //   }
-
-  //   fetchBlogs()
-  // }, [user])
-
   useEffect(() => {
-    const loggedUserJSON = window.sessionStorage.getItem('loggedBloglistUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      blogService.setToken(user.token)
+    const getBlogs = async () => {
+      if (loggedIn) {
+        try {
+          dispatch(fetchBlogs())
+        } catch (error) {
+          console.error('Error fetching blogs:', error.message)
+        }
+      }
     }
-  }, [])
+
+    getBlogs()
+  }, [dispatch, loggedIn])
 
   const loginFormRef = useRef()
 
-  const handleLogin = async (credentials) => {
-    try {
-      loginFormRef.current.toggleVisibility()
-      const user = await loginService.login(credentials)
-
-      window.sessionStorage.setItem('loggedBloglistUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-
-      setUser(user)
-    } catch (exception) {
-      dispatch(
-        showNotification(
-          { message: 'Wrong username or password', type: 'error' },
-          5
-        )
-      )
-    }
-  }
-
-  const handleLogout = async (event) => {
-    event.preventDefault()
-    console.log('logout executed')
-
-    window.sessionStorage.removeItem('loggedBloglistUser')
-
-    setUser(null)
-  }
-
-  const blogForm = () => {
-    return (
-      <div>
-        <Togglable buttonLabel='Create'>
-          <BlogForm />
-        </Togglable>
-      </div>
-    )
-  }
-
-  if (user === null) {
+  if (loggedIn === null) {
     return (
       <div>
         <h2>Log in to application</h2>
         <Notification />
         <Togglable buttonLabel='log in' ref={loginFormRef}>
-          <LoginForm createLogin={handleLogin} />
+          <LoginForm />
         </Togglable>
       </div>
     )
   }
-
+  console.log('Blogs', blogs)
   return (
     <div>
       <h2>blogs</h2>
       <Notification />
-      <h4>{user.name} logged in</h4>
-      <button id='logout' onClick={handleLogout}>
-        logout
-      </button>
+      <h4>{loggedIn.name} logged in</h4>
+      <LogoutButton />
       <h2>create new</h2>
-      {blogForm()}
+      <Togglable buttonLabel='Create'>
+        <BlogForm />
+      </Togglable>
       {blogs
+        .slice()
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} user={user} />
+          <Blog key={blog.id} blog={blog} user={loggedIn} />
         ))}
     </div>
   )

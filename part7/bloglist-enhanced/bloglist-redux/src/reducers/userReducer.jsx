@@ -15,8 +15,12 @@ export const { setUsers } = userSlice.actions
 
 export const fetchUsers = () => {
   return async (dispatch) => {
-    const users = await userService.getAll()
-    dispatch(setUsers(users))
+    try {
+      const users = await userService.getAll()
+      dispatch(setUsers(users))
+    } catch (error) {
+      console.log('FetchUsers error', error)
+    }
   }
 }
 

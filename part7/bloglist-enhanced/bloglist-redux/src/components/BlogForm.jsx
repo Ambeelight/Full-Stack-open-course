@@ -10,9 +10,9 @@ const BlogForm = () => {
 
     try {
       const newBlogData = {
-        title: event.target.value.title,
-        author: event.target.value.author,
-        url: event.target.value.url,
+        title: event.target.title.value,
+        author: event.target.author.value,
+        url: event.target.url.value,
       }
 
       dispatch(createBlog(newBlogData))

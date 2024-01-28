@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { setLogin } from '../reducers/loginReducer'
+import { logIn } from '../reducers/loginReducer'
 import { showNotification } from '../reducers/notificationReducer'
 
 const LoginForm = () => {
@@ -12,7 +12,8 @@ const LoginForm = () => {
         username: event.target.username.value,
         password: event.target.password.value,
       }
-      dispatch(setLogin(credentials))
+      console.log('Credentials', credentials)
+      dispatch(logIn(credentials))
     } catch (error) {
       dispatch(
         showNotification(

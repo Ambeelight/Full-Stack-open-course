@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { updateBlog, deleteBlog } from '../reducers/blogReducer'
-import { setNotification } from '../reducers/notificationReducer'
+import { showNotification } from '../reducers/notificationReducer'
 
 const blogStyle = {
   paddingTop: 10,
@@ -18,7 +18,7 @@ const deleteBtnStyle = {
 
 const Blog = ({ blog, user }) => {
   const dispatch = useDispatch()
-  // const blogs = useSelector((state) => state.blogs)
+
   const [showData, setShowData] = useState(false)
 
   const toggleData = () => setShowData(!showData)
@@ -28,7 +28,7 @@ const Blog = ({ blog, user }) => {
     try {
       dispatch(updateBlog(blogToUpdate))
       dispatch(
-        setNotification(
+        showNotification(
           {
             message: `A like for the blog '${blog.title}' by '${blog.author} has been added'`,
             type: 'success',
@@ -41,12 +41,12 @@ const Blog = ({ blog, user }) => {
     }
   }
 
-  const deleteHandler = (id) => {
+  const deleteHandler = (blog) => {
     if (window.confirm(`Delete blog "${blog.title}" by ${blog.author}?`)) {
       try {
-        dispatch(deleteBlog(id))
+        dispatch(deleteBlog(blog))
         dispatch(
-          setNotification(
+          showNotification(
             {
               message: `The blog' ${blog.title}' by '${blog.author} deleted`,
               type: 'success',
