@@ -13,28 +13,32 @@ const deleteBtnStyle = {
   color: 'white',
 }
 
-const Blog = ({ blog, likeHandler, deleteBlog, user }) => {
+const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
   const [showData, setShowData] = useState(false)
 
   const toggleData = () => setShowData(!showData)
 
   return (
-    <div className="blog" style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       <div>
         {blog.title} {blog.author}
         <button onClick={toggleData}>{showData ? 'Hide' : 'Show'}</button>
       </div>
       {showData && (
-        <div className="blog__hided">
+        <div className='blog__hided'>
           Website: {blog.url} <br />
           Likes: {blog.likes}
-          <button className="like" onClick={() => likeHandler(blog)}>
+          <button className='like' onClick={() => likeBlog(blog)}>
             like
           </button>{' '}
           <br />
           Added by {blog.user.name} <br />
           {blog.user.name === user.name ? (
-            <button className="removeBlog" onClick={() => deleteBlog(blog)} style={deleteBtnStyle}>
+            <button
+              className='removeBlog'
+              onClick={() => deleteBlog(blog)}
+              style={deleteBtnStyle}
+            >
               remove
             </button>
           ) : (

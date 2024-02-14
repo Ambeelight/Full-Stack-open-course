@@ -1,6 +1,10 @@
-export const Notification = ({ message, classType }) => {
-  const messageStylesSuccess = {
-    color: 'green',
+import { useNotificationValue } from '../NotificationContext'
+
+export const Notification = () => {
+  const notification = useNotificationValue()
+
+  const messageStyle = {
+    color: notification?.type === 'success' ? 'green' : 'red',
     background: 'black',
     fontSize: 20,
     borderStyle: 'solid',
@@ -9,18 +13,9 @@ export const Notification = ({ message, classType }) => {
     marginBottom: 10,
   }
 
-  const messageStylesError = {
-    color: 'red',
-    background: 'black',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  }
+  if (!(notification && notification.message)) return null
 
-  if (message === null) return null
-
-  if (classType === 'success') return <div style={messageStylesSuccess}>{message}</div>
-  else return <div style={messageStylesError}>{message}</div>
+  return <div style={messageStyle}>{notification.message}</div>
 }
+
+export default Notification

@@ -1,17 +1,33 @@
 import { useState } from 'react'
-import PropTypes from 'prop-types'
 
-const LoginForm = ({ createLogin }) => {
+import blogService from '../services/blogs'
+import loginService from '../services/login'
+import { useLogIn } from '../UserContext'
+import { useNotification } from '../NotificationContext'
+
+const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const logIn = useLogIn()
+  const notification = useNotification()
 
   const handleLogin = async (event) => {
     event.preventDefault()
 
-    createLogin({ username, password })
+    try {
+      const user = await loginService.login({ username, password })
 
-    setUsername('')
-    setPassword('')
+      window.sessionStorage.setItem('loggedBloglistUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+
+      logIn(user)
+      notification(`Welcome ${user.name}`, 'success')
+
+      setUsername('')
+      setPassword('')
+    } catch (error) {
+      notification('Wrong username or password', error)
+    }
   }
 
   return (
@@ -19,34 +35,30 @@ const LoginForm = ({ createLogin }) => {
       <div>
         username
         <input
-          id="username"
-          type="text"
+          id='username'
+          type='text'
           value={username}
-          name="Username"
+          name='Username'
           onChange={({ target }) => setUsername(target.value)}
-          autoComplete="off"
+          autoComplete='off'
         />
       </div>
       <div>
         password
         <input
-          id="password"
-          type="password"
+          id='password'
+          type='password'
           value={password}
-          name="Password"
+          name='Password'
           onChange={({ target }) => setPassword(target.value)}
-          autoComplete="off"
+          autoComplete='off'
         />
       </div>
-      <button id="login-btn" type="submit">
+      <button id='login-btn' type='submit'>
         log in
       </button>
     </form>
   )
-}
-
-LoginForm.propTypes = {
-  createLogin: PropTypes.func.isRequired,
 }
 
 export default LoginForm

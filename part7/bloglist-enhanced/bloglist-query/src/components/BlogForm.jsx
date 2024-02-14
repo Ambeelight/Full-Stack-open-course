@@ -1,85 +1,86 @@
-import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useRef } from 'react'
+import { useQueryClient, useMutation } from '@tanstack/react-query'
+import blogService from '../services/blogs'
+import Togglable from './Togglable'
+import { useNotification } from '../NotificationContext'
 
-const BlogForm = ({ createBlog, showNotification }) => {
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    url: '',
+const BlogForm = () => {
+  const queryClient = useQueryClient()
+  const blogFormRef = useRef()
+  const notification = useNotification()
+
+  const createNewBlog = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: (newBlog) => {
+      const prevBlogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], [...prevBlogs, newBlog])
+      notification(
+        `A new blog ${newBlog.title} by ${newBlog.author} has been added`,
+        'success'
+      )
+      queryClient.invalidateQueries(['blogs'])
+    },
+    onError: (error) => {
+      notification(`Error ${error} of adding a new blog`)
+    },
   })
 
-  const handleNewBlog = async (event) => {
+  const newBlogData = (event) => {
     event.preventDefault()
+    blogFormRef.current.toggleVisibility()
 
-    try {
-      const newBlogData = {
-        title: newBlog.title,
-        author: newBlog.author,
-        url: newBlog.url,
-      }
-
-      createBlog(newBlogData)
-      setNewBlog({ title: '', author: '', url: '' })
-
-      showNotification({
-        message: `A new blog ${newBlogData.title} by ${newBlogData.author} added`,
-        type: 'success',
-      })
-    } catch (error) {
-      console.log('Error creating a new blog', error.message)
+    const blogs = {
+      title: event.target.title.value,
+      author: event.target.author.value,
+      url: event.target.url.value,
     }
+
+    event.target.title.value = ''
+    event.target.author.value = ''
+    event.target.url.value = ''
+
+    createNewBlog.mutate(blogs)
   }
 
   return (
-    <div>
-      <h2>Blogs</h2>
+    <Togglable buttonLabel='Create' ref={blogFormRef}>
+      <h2>Create a new blog</h2>
 
-      <form onSubmit={handleNewBlog}>
+      <form onSubmit={newBlogData}>
         <div>
           title:
           <input
-            id="title"
-            type="text"
-            value={newBlog.title}
-            name="title"
-            onChange={(target) => setNewBlog({ ...newBlog, title: target.target.value })}
-            autoComplete="off"
-            placeholder="write title"
+            id='title'
+            type='text'
+            name='title'
+            autoComplete='off'
+            placeholder='write title'
           />
         </div>
         <div>
           author:
           <input
-            id="author"
-            type="text"
-            value={newBlog.author}
-            name="author"
-            onChange={(target) => setNewBlog({ ...newBlog, author: target.target.value })}
-            autoComplete="off"
-            placeholder="write author"
+            id='author'
+            type='text'
+            name='author'
+            autoComplete='off'
+            placeholder='write author'
           />
         </div>
         <div>
           url:
           <input
-            id="url"
-            type="text"
-            value={newBlog.url}
-            name="url"
-            onChange={(target) => setNewBlog({ ...newBlog, url: target.target.value })}
-            autoComplete="off"
-            placeholder="write url"
+            id='url'
+            type='text'
+            name='url'
+            autoComplete='off'
+            placeholder='write url'
           />
         </div>
-        <input id="createBlog" type="submit" value="Create" />
+        <input id='createBlog' type='submit' value='Create' />
       </form>
-    </div>
+    </Togglable>
   )
-}
-
-BlogForm.propTypes = {
-  createBlog: PropTypes.func.isRequired,
-  showNotification: PropTypes.func.isRequired,
 }
 
 export default BlogForm
