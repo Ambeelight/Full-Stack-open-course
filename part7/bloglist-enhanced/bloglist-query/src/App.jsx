@@ -7,6 +7,8 @@ import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
 import Notification from './components/Notification'
 
+import UserList from './components/UserList'
+
 import blogService from './services/blogs'
 
 const App = () => {
@@ -49,6 +51,7 @@ const App = () => {
       <h2>blogs</h2>
       <Notification />
       <LogoutForm />
+      <UserList />
       <BlogForm />
       <BlogList />
     </div>
