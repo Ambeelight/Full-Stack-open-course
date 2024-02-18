@@ -1,4 +1,8 @@
-import { useState } from 'react'
+import { useQueryClient, useMutation } from '@tanstack/react-query'
+import { useParams } from 'react-router-dom'
+import blogService from '../services/blogs'
+import { useNotification } from '../NotificationContext'
+import { useUserValue } from '../UserContext'
 
 const blogStyle = {
   paddingTop: 10,
@@ -13,18 +17,70 @@ const deleteBtnStyle = {
   color: 'white',
 }
 
-const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
-  const [showData, setShowData] = useState(false)
+const Blog = () => {
+  const { id } = useParams()
+  const queryClient = useQueryClient()
+  const blogs = queryClient.getQueryData(['blogs'])
+  const user = useUserValue()
+  const notification = useNotification()
 
-  const toggleData = () => setShowData(!showData)
+  if (!blogs) {
+    return <div>No blogs available</div>
+  }
+
+  const blog = blogs.find((b) => b.id === id)
+
+  const likeBlogMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: (updatedBlog) => {
+      queryClient.setQueryData(
+        ['blogs'],
+        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+      )
+      notification(
+        `The blog ${updatedBlog.title} by ${updatedBlog.author} has been liked`,
+        'success'
+      )
+    },
+    onError: (error) => {
+      notification(error.response.data.error)
+    },
+  })
+
+  const likeBlog = (blog) => {
+    const blogToUpdate = { ...blog, likes: blog.likes + 1 }
+    likeBlogMutation.mutate(blogToUpdate)
+  }
+
+  const removeBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: (deletedBlog) => {
+      const prevBlogs = queryClient.getQueryData(['blogs'])
+      const updatedBlogs = prevBlogs.filter(
+        (blogs) => blogs.id !== deletedBlog.id
+      )
+      queryClient.setQueryData(['blogs'], updatedBlogs)
+      notification(
+        `The blog ${deletedBlog.title} by ${deletedBlog.author} has been removed`,
+        'success'
+      )
+      queryClient.invalidateQueries(['blogs'])
+    },
+    onError: (error) => notification(error.response.data.error),
+  })
+
+  const removeBlog = (blog) => {
+    if (window.confirm(`Remove ${blog.title} by ${blog.author}?`)) {
+      removeBlogMutation.mutate(blog)
+    }
+  }
 
   return (
     <div className='blog' style={blogStyle}>
       <div>
         {blog.title} {blog.author}
-        <button onClick={toggleData}>{showData ? 'Hide' : 'Show'}</button>
       </div>
-      {showData && (
+      {
         <div className='blog__hided'>
           Website: {blog.url} <br />
           Likes: {blog.likes}
@@ -36,7 +92,7 @@ const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
           {blog.user.name === user.name ? (
             <button
               className='removeBlog'
-              onClick={() => deleteBlog(blog)}
+              onClick={() => removeBlog(blog)}
               style={deleteBtnStyle}
             >
               remove
@@ -45,7 +101,7 @@ const Blog = ({ blog, likeBlog, deleteBlog, user }) => {
             ''
           )}
         </div>
-      )}
+      }
     </div>
   )
 }

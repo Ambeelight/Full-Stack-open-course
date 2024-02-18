@@ -28,7 +28,11 @@ const App = () => {
     }
   }, [])
 
-  const { isError, isLoading } = useQuery({
+  const {
+    data: blogs,
+    isError,
+    isLoading,
+  } = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
     refetchOnWindowFocus: false,
@@ -69,12 +73,9 @@ const App = () => {
       <h2>blogs</h2>
       <Notification />
       <LogoutForm />
-      {/* <UserList /> */}
-      {/* <BlogForm /> */}
-      {/* <BlogList /> */}
 
       <Routes>
-        <Route path='/' element={<BlogList />} />
+        <Route path='/' element={<BlogList blogs={blogs} />} />
         <Route path='/blogs/:id' element={<Blog />} />
         <Route path='/blogs/create' element={<BlogForm />} />
 
