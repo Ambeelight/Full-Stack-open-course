@@ -1,5 +1,5 @@
 import { useState } from 'react'
-
+import { useNavigate } from 'react-router-dom'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
 import { useLogIn } from '../UserContext'
@@ -9,6 +9,7 @@ const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const logIn = useLogIn()
+  const navigate = useNavigate()
   const notification = useNotification()
 
   const handleLogin = async (event) => {
@@ -28,36 +29,41 @@ const LoginForm = () => {
     } catch (error) {
       notification('Wrong username or password', error)
     }
+
+    navigate('/')
   }
 
   return (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          id='username'
-          type='text'
-          value={username}
-          name='Username'
-          onChange={({ target }) => setUsername(target.value)}
-          autoComplete='off'
-        />
-      </div>
-      <div>
-        password
-        <input
-          id='password'
-          type='password'
-          value={password}
-          name='Password'
-          onChange={({ target }) => setPassword(target.value)}
-          autoComplete='off'
-        />
-      </div>
-      <button id='login-btn' type='submit'>
-        log in
-      </button>
-    </form>
+    <div>
+      <h2>Log in to application</h2>
+      <form onSubmit={handleLogin}>
+        <div>
+          username
+          <input
+            id='username'
+            type='text'
+            value={username}
+            name='Username'
+            onChange={({ target }) => setUsername(target.value)}
+            autoComplete='off'
+          />
+        </div>
+        <div>
+          password
+          <input
+            id='password'
+            type='password'
+            value={password}
+            name='Password'
+            onChange={({ target }) => setPassword(target.value)}
+            autoComplete='off'
+          />
+        </div>
+        <button id='login-btn' type='submit'>
+          log in
+        </button>
+      </form>
+    </div>
   )
 }
 

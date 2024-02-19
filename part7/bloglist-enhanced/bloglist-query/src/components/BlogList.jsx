@@ -7,6 +7,7 @@ const BlogList = ({ blogs }) => {
 
   return (
     <div>
+      <h2>blogs</h2>
       <table>
         <tbody>
           {blogs.map((blog) => (

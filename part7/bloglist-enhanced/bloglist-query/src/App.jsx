@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import { useLogIn, useUserValue } from './UserContext'
 import { useQuery } from '@tanstack/react-query'
-import { Routes, Route } from 'react-router-dom'
+import { useLogIn, useUserValue } from './UserContext'
+import { Routes, Route, Link } from 'react-router-dom'
 import LoginForm from './components/LoginForm'
 import LogoutForm from './components/LogoutForm'
 import BlogForm from './components/BlogForm'
@@ -28,11 +28,7 @@ const App = () => {
     }
   }, [])
 
-  const {
-    data: blogs,
-    isError,
-    isLoading,
-  } = useQuery({
+  const { data: blogs } = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
     refetchOnWindowFocus: false,
@@ -55,26 +51,32 @@ const App = () => {
   if (!user) {
     return (
       <div>
-        <h2>Log in to application</h2>
         <Notification />
         <LoginForm />
       </div>
     )
   }
 
-  if (isLoading) {
-    return <h1>Loading data...</h1>
-  } else if (isError) {
-    return <h1>Server is not available</h1>
+  const style = {
+    padding: 5,
   }
-
   return (
     <div>
-      <h2>blogs</h2>
-      <Notification />
+      <div>
+        <Link style={style} to='/'>
+          blogs
+        </Link>
+        <Link style={style} to='/users'>
+          users
+        </Link>
+      </div>
+
       <LogoutForm />
+      <Notification />
 
       <Routes>
+        {/* <Route path='/login' element={<LoginForm />} /> */}
+
         <Route path='/' element={<BlogList blogs={blogs} />} />
         <Route path='/blogs/:id' element={<Blog />} />
         <Route path='/blogs/create' element={<BlogForm />} />
