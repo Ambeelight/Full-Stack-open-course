@@ -1,8 +1,8 @@
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import blogService from '../services/blogs'
 import { useNotification } from '../NotificationContext'
 import { useUserValue } from '../UserContext'
+import blogService from '../services/blogs'
 
 const blogStyle = {
   paddingTop: 10,
@@ -19,9 +19,9 @@ const deleteBtnStyle = {
 
 const Blog = () => {
   const { id } = useParams()
+  const user = useUserValue()
   const queryClient = useQueryClient()
   const blogs = queryClient.getQueryData(['blogs'])
-  const user = useUserValue()
   const notification = useNotification()
 
   if (!blogs) {
@@ -55,7 +55,7 @@ const Blog = () => {
   const removeBlogMutation = useMutation({
     mutationFn: blogService.remove,
     onSuccess: (deletedBlog) => {
-      const prevBlogs = queryClient.getQueryData(['blogs'])
+      const prevBloblgs = queryClient.getQueryData(['blogs'])
       const updatedBlogs = prevBlogs.filter(
         (blogs) => blogs.id !== deletedBlog.id
       )
@@ -75,10 +75,30 @@ const Blog = () => {
     }
   }
 
+  const addCommentMutation = useMutation({
+    mutationFn: blogService.createComment,
+    onSuccess: (updatedBlog) => {
+      queryClient.setQueryData(
+        ['blogs'],
+        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+      )
+      notification(`The comment has been added`, 'success')
+      queryClient.invalidateQueries(['blogs'])
+    },
+    onError: (error) => notification(error.response.data.error),
+  })
+
+  const addComment = (comment) => {
+    const blogToUpdate = { ...blog, comments: [...blog.comments, comment] }
+    addCommentMutation.mutate(blogToUpdate)
+  }
+
   return (
     <div className='blog' style={blogStyle}>
       <div>
-        {blog.title} {blog.author}
+        <h2>
+          {blog.title} {blog.author}
+        </h2>
       </div>
       {
         <div className='blog__hided'>
@@ -102,6 +122,24 @@ const Blog = () => {
           )}
         </div>
       }
+      <div className='blog__comments'>
+        <h3>comments:</h3>
+        <form onSubmit={addComment}>
+          <input
+            id='comment'
+            type='text'
+            name='comment'
+            autoComplete='off'
+            placeholder='write a comment'
+          ></input>
+          <input id='addComment' type='submit' value='add comment'></input>
+        </form>
+        <ul>
+          {blog.comments.map((comment, index) => (
+            <li key={index}>{comment}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }

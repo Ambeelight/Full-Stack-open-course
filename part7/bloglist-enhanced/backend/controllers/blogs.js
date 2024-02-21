@@ -31,6 +31,7 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
     url: body.url,
     user: user.id,
     likes: body.likes || 0,
+    comments: [],
   })
 
   const savedBlog = await blog.save()
@@ -57,7 +58,9 @@ blogsRouter.delete('/:id', async (request, response) => {
     await Blog.findByIdAndRemove(request.params.id)
     return response.status(204).end()
   } else {
-    return response.status(403).json({ error: 'You are not authorized to delete this blog' })
+    return response
+      .status(403)
+      .json({ error: 'You are not authorized to delete this blog' })
   }
 })
 
@@ -73,11 +76,32 @@ blogsRouter.put('/:id', async (request, response) => {
     likes: body.likes,
   }
 
-  const result = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  const result = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+  })
 
   if (!result) return response.status(404).json({ error: 'Blog not found' })
 
   response.status(200).json(result)
+})
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const { comment } = await request.body
+  try {
+    const blog = Blog.findById(request.params.id).populate('user')
+
+    if (!blog) {
+      return response.status(404).json({ error: 'Blog not found' })
+    }
+
+    blog.comments = blog.comments.concat(comment)
+
+    const savedBlog = await blog.save()
+
+    response.json(savedBlog)
+  } catch (error) {
+    response.status(500).json({ error: 'Internal server error' })
+  }
 })
 
 module.exports = blogsRouter
