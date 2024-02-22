@@ -24,11 +24,11 @@ const Blog = () => {
   const blogs = queryClient.getQueryData(['blogs'])
   const notification = useNotification()
 
-  if (!blogs) {
-    return <div>No blogs available</div>
-  }
+  // if (!blogs) {
+  //   return <div>No blogs available</div>
+  // }
 
-  const blog = blogs.find((b) => b.id === id)
+  // const blog = blogs.find((b) => b.id === id)
 
   const likeBlogMutation = useMutation({
     mutationFn: blogService.update,
@@ -55,7 +55,7 @@ const Blog = () => {
   const removeBlogMutation = useMutation({
     mutationFn: blogService.remove,
     onSuccess: (deletedBlog) => {
-      const prevBloblgs = queryClient.getQueryData(['blogs'])
+      const prevBlogs = queryClient.getQueryData(['blogs'])
       const updatedBlogs = prevBlogs.filter(
         (blogs) => blogs.id !== deletedBlog.id
       )
@@ -76,21 +76,30 @@ const Blog = () => {
   }
 
   const addCommentMutation = useMutation({
-    mutationFn: blogService.createComment,
+    mutationFn: blogService.addComment,
     onSuccess: (updatedBlog) => {
+      console.log('Mutato', updatedBlog)
       queryClient.setQueryData(
         ['blogs'],
         blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
       )
-      notification(`The comment has been added`, 'success')
+      notification(`A comment has been added`, 'success')
       queryClient.invalidateQueries(['blogs'])
     },
     onError: (error) => notification(error.response.data.error),
   })
 
-  const addComment = (comment) => {
-    const blogToUpdate = { ...blog, comments: [...blog.comments, comment] }
-    addCommentMutation.mutate(blogToUpdate)
+  if (!blogs) {
+    return <div>No blogs available</div>
+  }
+
+  const blog = blogs.find((b) => b.id === id)
+
+  const addComment = (event) => {
+    event.preventDefault()
+    const comment = event.target.elements.comment.value
+
+    addCommentMutation.mutate({ id, comment })
   }
 
   return (
