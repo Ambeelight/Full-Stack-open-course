@@ -86,20 +86,22 @@ blogsRouter.put('/:id', async (request, response) => {
 })
 
 blogsRouter.post('/:id/comments', async (request, response) => {
-  const { comment } = await request.body
   try {
-    const blog = Blog.findById(request.params.id).populate('user')
+    const blog = await Blog.findById(request.params.id)
 
     if (!blog) {
       return response.status(404).json({ error: 'Blog not found' })
     }
 
+    const { comment } = request.body
+
     blog.comments = blog.comments.concat(comment)
 
     const savedBlog = await blog.save()
 
-    response.json(savedBlog)
+    response.status(200).json(savedBlog)
   } catch (error) {
+    console.error(error)
     response.status(500).json({ error: 'Internal server error' })
   }
 })
