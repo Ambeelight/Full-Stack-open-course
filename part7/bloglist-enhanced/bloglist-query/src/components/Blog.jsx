@@ -78,7 +78,6 @@ const Blog = () => {
   const addCommentMutation = useMutation({
     mutationFn: blogService.addComment,
     onSuccess: (updatedBlog) => {
-      console.log('Mutato', updatedBlog)
       queryClient.setQueryData(
         ['blogs'],
         blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
