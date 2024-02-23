@@ -24,12 +24,6 @@ const Blog = () => {
   const blogs = queryClient.getQueryData(['blogs'])
   const notification = useNotification()
 
-  // if (!blogs) {
-  //   return <div>No blogs available</div>
-  // }
-
-  // const blog = blogs.find((b) => b.id === id)
-
   const likeBlogMutation = useMutation({
     mutationFn: blogService.update,
     onSuccess: (updatedBlog) => {

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useLogIn, useUserValue } from './UserContext'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import LoginForm from './components/LoginForm'
 import LogoutForm from './components/LogoutForm'
 import BlogForm from './components/BlogForm'
@@ -18,6 +18,7 @@ import userService from './services/users'
 const App = () => {
   const logIn = useLogIn()
   const user = useUserValue()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const loggedUserJSON = window.sessionStorage.getItem('loggedBloglistUser')
@@ -25,6 +26,8 @@ const App = () => {
       const loggedUser = JSON.parse(loggedUserJSON)
       logIn(loggedUser)
       blogService.setToken(loggedUser.token)
+    } else {
+      navigate('/login')
     }
   }, [])
 
@@ -48,15 +51,6 @@ const App = () => {
 
   const usersData = users.data
 
-  if (!user) {
-    return (
-      <div>
-        <Notification />
-        <LoginForm />
-      </div>
-    )
-  }
-
   const style = {
     padding: 5,
   }
@@ -71,11 +65,11 @@ const App = () => {
         </Link>
       </div>
 
-      <LogoutForm />
+      {user && <LogoutForm />}
       <Notification />
 
       <Routes>
-        {/* <Route path='/login' element={<LoginForm />} /> */}
+        <Route path='/login' element={<LoginForm />} />
 
         <Route path='/' element={<BlogList blogs={blogs} />} />
         <Route path='/blogs/:id' element={<Blog />} />
