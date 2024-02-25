@@ -29,14 +29,13 @@ const App = () => {
     } else {
       navigate('/login')
     }
-  }, [])
+  }, [navigate])
 
   const { data: blogs } = useQuery({
     queryKey: ['blogs'],
     queryFn: blogService.getAll,
     refetchOnWindowFocus: false,
   })
-
   const users = useQuery({
     queryKey: ['users'],
     queryFn: userService.getAll,
@@ -51,21 +50,23 @@ const App = () => {
 
   const usersData = users.data
 
-  const style = {
-    padding: 5,
-  }
   return (
-    <div>
-      <div>
-        <Link style={style} to='/'>
-          blogs
-        </Link>
-        <Link style={style} to='/users'>
-          users
-        </Link>
-      </div>
+    <div className='mx-auto max-w-5xl'>
+      {user && (
+        <div className='flex flex-row justify-between items-center pt-2 '>
+          <nav className='text-xl'>
+            <Link className='p-1' to='/'>
+              blogs
+            </Link>
+            <Link className='p-1' to='/users'>
+              users
+            </Link>
+          </nav>
+          <LogoutForm />
+        </div>
+      )}
 
-      {user && <LogoutForm />}
+      {/* {user && <LogoutForm />} */}
       <Notification />
 
       <Routes>
