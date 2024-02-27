@@ -6,19 +6,18 @@ const BlogList = ({ blogs }) => {
   }
 
   return (
-    <div>
-      <h2>blogs</h2>
-      <table>
-        <tbody>
-          {blogs.map((blog) => (
-            <tr key={blog.id}>
-              <td>
-                <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className=''>
+      <h2 className='text-xl font-bold'>Blogs:</h2>
+      <ul className='list-disc pl-8 text-lg'>
+        {blogs.map((blog) => (
+          <li
+            key={blog.id}
+            className='hover:text-indigo-600 hover:font-bold  my-2'
+          >
+            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

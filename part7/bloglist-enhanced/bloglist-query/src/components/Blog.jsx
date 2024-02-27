@@ -4,19 +4,6 @@ import { useNotification } from '../NotificationContext'
 import { useUserValue } from '../UserContext'
 import blogService from '../services/blogs'
 
-const blogStyle = {
-  paddingTop: 10,
-  paddingLeft: 2,
-  border: 'solid',
-  borderWidth: 1,
-  marginBottom: 5,
-}
-
-const deleteBtnStyle = {
-  backgroundColor: '#526FFF',
-  color: 'white',
-}
-
 const Blog = () => {
   const { id } = useParams()
   const user = useUserValue()
@@ -96,26 +83,40 @@ const Blog = () => {
   }
 
   return (
-    <div className='blog' style={blogStyle}>
+    <div>
       <div>
-        <h2>
-          {blog.title} {blog.author}
+        <h2 className='text-xl font-bold'>
+          {blog.title}{' '}
+          <span className='text-xl font-bold text-indigo-600'>
+            {blog.author}
+          </span>
         </h2>
       </div>
       {
-        <div className='blog__hided'>
-          Website: {blog.url} <br />
-          Likes: {blog.likes}
-          <button className='like' onClick={() => likeBlog(blog)}>
-            like
-          </button>{' '}
-          <br />
-          Added by {blog.user.name} <br />
+        <div className='text-base'>
+          <div className=''>
+            Website:{' '}
+            <span className='font-bold text-indigo-600'>{blog.url}</span>
+          </div>
+          <div>
+            Likes:{' '}
+            <span className='font-bold text-indigo-600'>{blog.likes}</span>
+            <button
+              onClick={() => likeBlog(blog)}
+              className='rounded-md bg-indigo-600 px-2 ml-2 text-sm font-semibold leading-1 text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+            >
+              like
+            </button>
+          </div>
+
+          <div>
+            Added by{' '}
+            <span className='text-indigo-600 font-bold'>{blog.user.name} </span>
+          </div>
           {blog.user.name === user.name ? (
             <button
-              className='removeBlog'
               onClick={() => removeBlog(blog)}
-              style={deleteBtnStyle}
+              className='rounded-md bg-indigo-600 px-1 py-1 text-sm font-semibold leading-1 text-white shadow-sm hover:bg-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
             >
               remove
             </button>
@@ -124,8 +125,8 @@ const Blog = () => {
           )}
         </div>
       }
-      <div className='blog__comments'>
-        <h3>comments:</h3>
+      <div>
+        <h3 className='font-bold'>comments:</h3>
         <form onSubmit={addComment}>
           <input
             id='comment'
@@ -133,12 +134,20 @@ const Blog = () => {
             name='comment'
             autoComplete='off'
             placeholder='write a comment'
+            className='w-80 px-2 rounded-md border-0 py-1.5 mr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6'
           ></input>
-          <input id='addComment' type='submit' value='add comment'></input>
+          <input
+            id='addComment'
+            type='submit'
+            value='add comment'
+            className='rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold leading-1 text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+          ></input>
         </form>
         <ul>
           {blog.comments.map((comment, index) => (
-            <li key={index}>{comment}</li>
+            <li key={index} className='text-base list-disc my-2 ml-6'>
+              {comment}
+            </li>
           ))}
         </ul>
       </div>

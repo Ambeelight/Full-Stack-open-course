@@ -3,21 +3,24 @@ import { Link } from 'react-router-dom'
 const UserList = ({ users }) => {
   return (
     <div>
-      <h2>Users</h2>
-      <table>
+      <h2 className='text-xl font-bold'>Users</h2>
+      <table className='table-fixed'>
         <thead>
           <tr>
             <th></th>
-            <th>Blogs Created</th>
+            <th className='text-lg'>Blogs Created</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user) => (
-            <tr key={user.id}>
-              <td>
+            <tr
+              key={user.id}
+              className='hover:text-indigo-600 hover:font-bold my-2 text-lg'
+            >
+              <td className='w-40'>
                 <Link to={`/users/${user.id}`}>{user.name}</Link>
               </td>
-              <td>{user.blogs.length}</td>
+              <td className='text-center w-32'>{user.blogs.length}</td>
             </tr>
           ))}
         </tbody>

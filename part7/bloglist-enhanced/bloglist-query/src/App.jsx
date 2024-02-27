@@ -14,6 +14,7 @@ import UserList from './components/UserList'
 
 import blogService from './services/blogs'
 import userService from './services/users'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const logIn = useLogIn()
@@ -53,20 +54,21 @@ const App = () => {
   return (
     <div className='mx-auto max-w-5xl'>
       {user && (
-        <div className='flex flex-row justify-between items-center pt-2 '>
-          <nav className='text-xl'>
-            <Link className='p-1' to='/'>
-              blogs
-            </Link>
-            <Link className='p-1' to='/users'>
-              users
-            </Link>
+        <div className='flex flex-row justify-between items-center py-2'>
+          <nav>
+            <ul className='flex flex-row items-center gap-2 text-xl'>
+              <li className='hover:text-indigo-600 hover:font-bold w-14'>
+                <Link to='/'>Blogs</Link>
+              </li>
+              <li className='hover:text-indigo-600 hover:font-bold w-14'>
+                <Link to='/users'>Users</Link>
+              </li>
+            </ul>
           </nav>
           <LogoutForm />
         </div>
       )}
 
-      {/* {user && <LogoutForm />} */}
       <Notification />
 
       <Routes>

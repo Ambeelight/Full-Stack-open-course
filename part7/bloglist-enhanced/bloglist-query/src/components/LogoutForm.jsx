@@ -17,11 +17,11 @@ const LogoutForm = () => {
     navigate('/login')
   }
   return (
-    <div className='flex justify-end'>
+    <div className='flex justify-end text-xl'>
       <h3 className='pe-2'>{user.name} is logged in</h3>
       <button
         onClick={handleLogout}
-        className='rounded-md bg-indigo-600 px-2 text-sm font-semibold leading-1 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+        className='rounded-md bg-indigo-600 px-2 text-sm font-semibold leading-1 text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
       >
         logout
       </button>
