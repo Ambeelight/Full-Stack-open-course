@@ -14,7 +14,6 @@ import UserList from './components/UserList'
 
 import blogService from './services/blogs'
 import userService from './services/users'
-import Togglable from './components/Togglable'
 
 const App = () => {
   const logIn = useLogIn()

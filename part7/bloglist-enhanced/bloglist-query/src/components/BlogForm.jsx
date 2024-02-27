@@ -1,13 +1,12 @@
-import { useRef } from 'react'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import blogService from '../services/blogs'
-import Togglable from './Togglable'
 import { useNotification } from '../NotificationContext'
+import { Link, useNavigate } from 'react-router-dom'
 
 const BlogForm = () => {
   const queryClient = useQueryClient()
-  const blogFormRef = useRef()
   const notification = useNotification()
+  const navigate = useNavigate()
 
   const createNewBlog = useMutation({
     mutationFn: blogService.create,
@@ -19,6 +18,7 @@ const BlogForm = () => {
         'success'
       )
       queryClient.invalidateQueries(['blogs'])
+      navigate('/')
     },
     onError: (error) => {
       notification(`Error ${error} of adding a new blog`)
@@ -27,7 +27,6 @@ const BlogForm = () => {
 
   const newBlogData = (event) => {
     event.preventDefault()
-    blogFormRef.current.toggleVisibility()
 
     const blogs = {
       title: event.target.title.value,
@@ -43,43 +42,57 @@ const BlogForm = () => {
   }
 
   return (
-    <Togglable buttonLabel='Create' ref={blogFormRef}>
-      <h2>Create a new blog</h2>
+    <div>
+      <h2 className='text-lg text-indigo-600 font-bold'>Create a new blog</h2>
 
       <form onSubmit={newBlogData}>
-        <div>
-          title:
+        <div className='flex mb-2'>
+          <div className='text-lg pr-2 py-1.5  w-16'>title:</div>
           <input
             id='title'
             type='text'
             name='title'
             autoComplete='off'
             placeholder='write title'
+            className='w-80 px-2 rounded-md border-0 py-1.5 mr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6'
           />
         </div>
-        <div>
-          author:
+        <div className='flex mb-2'>
+          <div className='text-lg pr-2 py-1.5 w-16'>author:</div>
           <input
             id='author'
             type='text'
             name='author'
             autoComplete='off'
             placeholder='write author'
+            className='w-80 px-2 rounded-md border-0 py-1.5 mr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6'
           />
         </div>
-        <div>
-          url:
+        <div className='flex mb-2'>
+          <div className='text-lg pr-2 py-1.5 w-16'>url:</div>
           <input
             id='url'
             type='text'
             name='url'
             autoComplete='off'
             placeholder='write url'
+            className='w-80 px-2 rounded-md border-0 py-1.5 mr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-base sm:leading-6'
           />
         </div>
-        <input id='createBlog' type='submit' value='Create' />
+        <input
+          id='createBlog'
+          type='submit'
+          value='Create'
+          className='cursor-pointer rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold leading-1 text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+        />
+        <Link
+          to={'/'}
+          className='rounded-md bg-neutral-200 px-4 py-2 text-sm font-semibold leading-1 text-black shadow-sm hover:bg-red-600 hover:text-white  ml-4'
+        >
+          Cancel
+        </Link>
       </form>
-    </Togglable>
+    </div>
   )
 }
 

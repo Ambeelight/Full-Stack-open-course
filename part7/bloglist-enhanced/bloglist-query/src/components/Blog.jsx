@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useNotification } from '../NotificationContext'
 import { useUserValue } from '../UserContext'
 import blogService from '../services/blogs'
+import { useNavigate } from 'react-router-dom'
 
 const Blog = () => {
   const { id } = useParams()
@@ -10,6 +11,7 @@ const Blog = () => {
   const queryClient = useQueryClient()
   const blogs = queryClient.getQueryData(['blogs'])
   const notification = useNotification()
+  const navigate = useNavigate()
 
   const likeBlogMutation = useMutation({
     mutationFn: blogService.update,
@@ -22,6 +24,7 @@ const Blog = () => {
         `The blog ${updatedBlog.title} by ${updatedBlog.author} has been liked`,
         'success'
       )
+      queryClient.invalidateQueries(['blogs'])
     },
     onError: (error) => {
       notification(error.response.data.error)
@@ -46,6 +49,7 @@ const Blog = () => {
         'success'
       )
       queryClient.invalidateQueries(['blogs'])
+      navigate('/')
     },
     onError: (error) => notification(error.response.data.error),
   })
@@ -63,7 +67,7 @@ const Blog = () => {
         ['blogs'],
         blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
       )
-      notification(`A comment has been added`, 'success')
+      notification(`Comment has been added`, 'success')
       queryClient.invalidateQueries(['blogs'])
     },
     onError: (error) => notification(error.response.data.error),
@@ -96,7 +100,7 @@ const Blog = () => {
         <div className='text-base'>
           <div className=''>
             Website:{' '}
-            <span className='font-bold text-indigo-600'>{blog.url}</span>
+            <span className='font-bold text-indigo-600'>{blog.url}å</span>
           </div>
           <div>
             Likes:{' '}
@@ -145,7 +149,7 @@ const Blog = () => {
         </form>
         <ul>
           {blog.comments.map((comment, index) => (
-            <li key={index} className='text-base list-disc my-2 ml-6'>
+            <li key={index} className='text-lg list-disc my-2 ml-6'>
               {comment}
             </li>
           ))}
