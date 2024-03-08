@@ -1,5 +1,3 @@
-import { ApolloServer } from '@apollo/server'
-import { startStandaloneServer } from '@apollo/server/standalone'
 import { v1 as uuid } from 'uuid'
 
 let authors = [
@@ -80,43 +78,7 @@ let books = [
   },
 ]
 
-const typeDefs = `
-    type Author {
-        name: String!
-        born: Int
-        id: ID!
-        bookCount: Int
-
-}
-    type Book {
-        title: String!
-        author: String!
-        published: Int!
-        genres: [String]!
-        genre: String
-
-    }
-    type Query {
-        bookCount: Int!
-        authorCount: Int!
-        allBooks(author: String, genre: String): [Book!]!
-        allAuthors: [Author!]!
-  }
-    type Mutation {
-      addBook (
-        title: String!
-        author: String!
-        published: Int!
-        genres: [String!]!
-      ) : Book
-      editAuthor (
-        name: String!
-        setBornTo: Int
-      ) : Author
-    }
-`
-
-const resolvers = {
+export const resolvers = {
   Query: {
     bookCount: () => books.length,
     authorCount: () => authors.length,
@@ -165,14 +127,3 @@ const resolvers = {
     },
   },
 }
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-})
-
-startStandaloneServer(server, {
-  listen: { port: 4000 },
-}).then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-})
