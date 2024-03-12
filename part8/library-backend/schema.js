@@ -11,7 +11,7 @@ type Book {
     author: String!
     published: Int!
     genres: [String]!
-    genre: String
+    id: ID!
 
 }
 type Query {
@@ -29,7 +29,7 @@ type Mutation {
   ) : Book
   editAuthor (
     name: String!
-    setBornTo: Int
+    setBornTo: Int!
   ) : Author
 }
 `
