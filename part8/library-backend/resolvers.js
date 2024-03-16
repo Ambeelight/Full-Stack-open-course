@@ -1,8 +1,8 @@
 import { GraphQLError } from 'graphql'
+import jwt from 'jsonwebtoken'
 import Author from './models/author.js'
 import Book from './models/book.js'
 import User from './models/user.js'
-import { jwt } from 'jsonwebtoken'
 
 export const resolvers = {
   Query: {
@@ -26,7 +26,7 @@ export const resolvers = {
       })
     },
     allAuthors: async () => Author.find({}),
-    me: async () => User.find({}),
+    me: async (root, args, context) => context.currentUser,
   },
   Author: {
     bookCount: async (root) => {
@@ -35,8 +35,17 @@ export const resolvers = {
     },
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
       const author = await Author.findOne({ name: args.author })
+      const currentUser = context.currentUser
+
+      if (!currentUser) {
+        throw new GraphQLError('not authenticated', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        })
+      }
 
       if (!author) {
         const newAuthor = new Author({
@@ -72,10 +81,19 @@ export const resolvers = {
 
       return book
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
       const author = await Author.findOne({
         name: args.name,
       })
+      const currentUser = context.currentUser
+
+      if (!currentUser) {
+        throw new GraphQLError('not authenticated', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        })
+      }
 
       if (!author) return null
 
@@ -125,7 +143,7 @@ export const resolvers = {
         id: user._id,
       }
 
-      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
+      return { value: jwt.sign(userForToken, process.env.SECRET) }
     },
   },
 }
