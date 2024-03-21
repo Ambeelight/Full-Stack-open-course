@@ -27,6 +27,7 @@ type Query {
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
+    genres: [String!]!
     allAuthors: [Author!]!
     me: User!
 }

@@ -25,6 +25,12 @@ export const resolvers = {
         born: 1,
       })
     },
+    genres: async () => {
+      const books = await Book.find({})
+      const genres = [...new Set(books.flatMap((b) => b.genres))]
+
+      return genres
+    },
     allAuthors: async () => Author.find({}),
     me: async (root, args, context) => context.currentUser,
   },

@@ -14,8 +14,6 @@ const LoginForm = ({ setToken }) => {
     },
   })
 
-  console.log('Result', result.data)
-
   useEffect(() => {
     if (result.data) {
       const token = result.data.login.value
@@ -27,7 +25,10 @@ const LoginForm = ({ setToken }) => {
   const submit = async (event) => {
     event.preventDefault()
 
-    login({ variables: { username, password } })
+    const variables = { username, password }
+    console.log('Variables', variables)
+
+    login({ variables })
 
     setUsername('')
     setPassword('')

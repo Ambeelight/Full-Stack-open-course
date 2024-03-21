@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Routes, Route, Link } from 'react-router-dom'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import LogoutBtn from './components/LogoutBtn'
+import UserRecommendations from './components/UserRecommendations'
 
 const styles = {
   padding: 5,
@@ -13,12 +14,6 @@ const styles = {
 
 const App = () => {
   const [token, setToken] = useState(null)
-
-  console.log('Token:', token)
-
-  // if (!token) {
-  //   return <LoginForm setToken={setToken} />
-  // }
 
   return (
     <div>
@@ -33,12 +28,16 @@ const App = () => {
           <Link style={styles} to='/add'>
             add book
           </Link>
+          <Link style={styles} to='/recommendations'>
+            recommend
+          </Link>
           <LogoutBtn setToken={setToken} />
 
           <Routes>
             <Route path='/' element={<Authors />} />
             <Route path='/books' element={<Books />} />
             <Route path='/add' element={<NewBook />} />
+            <Route path='recommendations' element={<UserRecommendations />} />
             <Route path='/login' element={<LoginForm setToken={setToken} />} />
           </Routes>
         </div>
