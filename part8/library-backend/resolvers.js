@@ -1,8 +1,12 @@
 import { GraphQLError } from 'graphql'
 import jwt from 'jsonwebtoken'
+
 import Author from './models/author.js'
 import Book from './models/book.js'
 import User from './models/user.js'
+
+import { PubSub } from 'graphql-subscriptions'
+const pubsub = new PubSub()
 
 export const resolvers = {
   Query: {
@@ -42,7 +46,6 @@ export const resolvers = {
   },
   Mutation: {
     addBook: async (root, args, context) => {
-      const author = await Author.findOne({ name: args.author })
       const currentUser = context.currentUser
 
       if (!currentUser) {
@@ -52,6 +55,8 @@ export const resolvers = {
           },
         })
       }
+
+      const author = await Author.findOne({ name: args.author })
 
       if (!author) {
         const newAuthor = new Author({
@@ -71,7 +76,7 @@ export const resolvers = {
         }
       }
 
-      const book = new Book({ ...args, author: author.id })
+      const book = new Book({ ...args, author })
 
       try {
         await book.save()
@@ -84,6 +89,8 @@ export const resolvers = {
           },
         })
       }
+
+      pubsub.publish('BOOK_ADDED', { bookAdded: book })
 
       return book
     },
@@ -150,6 +157,11 @@ export const resolvers = {
       }
 
       return { value: jwt.sign(userForToken, process.env.SECRET) }
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator('BOOK_ADDED'),
     },
   },
 }
