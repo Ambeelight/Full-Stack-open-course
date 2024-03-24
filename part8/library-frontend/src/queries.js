@@ -9,7 +9,7 @@ const AUTHOR_DETAILS = gql`
   }
 `
 
-const BOOK_DETAILS = gql`
+export const BOOK_DETAILS = gql`
   fragment BookDetails on Book {
     title
     published
