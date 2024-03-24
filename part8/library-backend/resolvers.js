@@ -56,15 +56,15 @@ export const resolvers = {
         })
       }
 
-      const author = await Author.findOne({ name: args.author })
+      let author = await Author.findOne({ name: args.author })
 
       if (!author) {
-        const newAuthor = new Author({
+        author = new Author({
           name: args.author,
           born: null,
         })
         try {
-          await newAuthor.save()
+          await author.save()
         } catch (error) {
           throw new GraphQLError('Saving author failed', {
             extensions: {

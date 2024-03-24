@@ -12,6 +12,7 @@ const LoginForm = ({ setToken }) => {
     onError: (error) => {
       console.log('Error', error.graphQLErrors[0].message)
     },
+    onCompleted: () => navigate('/'),
   })
 
   useEffect(() => {
@@ -32,7 +33,6 @@ const LoginForm = ({ setToken }) => {
 
     setUsername('')
     setPassword('')
-    navigate('/')
   }
 
   return (
