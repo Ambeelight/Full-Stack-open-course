@@ -14,17 +14,16 @@ interface Result {
 }
 
 const parseExerciseArguments = (args: Array<string>): TrainingValues => {
-  if (args.length < 10) throw new Error('Not enough arguments');
-  if (args.length > 10) throw new Error('Too many arguments');
+  if (args.length < 4) throw new Error('Not enough arguments');
 
-  const trainingHours = args.slice(2, 9).map(Number);
+  const trainingHours = args.slice(2, args.length - 1).map(Number);
 
-  if (trainingHours.some(isNaN) || isNaN(Number(args[9]))) {
+  if (trainingHours.some(isNaN) || isNaN(Number(args[args.length - 1]))) {
     throw new Error('Provided values were not numbers!');
   } else {
     return {
       exerciseHours: trainingHours,
-      target: Number(args[9]),
+      target: Number(args[args.length - 1]),
     };
   }
 };
