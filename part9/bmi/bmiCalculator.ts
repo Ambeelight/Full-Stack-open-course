@@ -17,7 +17,7 @@ const parseArguments = (args: string[]): BmiValues => {
   }
 };
 
-const calculateBmi = (height: number, weight: number): string => {
+export const calculateBmi = (height: number, weight: number): string => {
   const bmi = weight / Math.pow(height / 100, 2);
   if (bmi < 16) return 'Underweight (Severe thinness)';
   if (bmi < 17) return 'Underweight (Moderate thinness)';
