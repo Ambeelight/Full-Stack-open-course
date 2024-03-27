@@ -28,7 +28,7 @@ const parseExerciseArguments = (args: Array<string>): TrainingValues => {
   }
 };
 
-const calculateExercises = (
+export const calculateExercises = (
   exerciseHours: number[],
   target: number
 ): Result => {
@@ -36,7 +36,7 @@ const calculateExercises = (
   const trainingDays = exerciseHours.filter((hours) => hours > 0).length;
   const average =
     exerciseHours.reduce((sum, curr) => sum + curr, 0) / periodLength;
-  const success = target >= average;
+  const success = !isNaN(average) && average >= target;
   const getRating = (average: number, target: number): number => {
     if (average < target) {
       return 1;
