@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { DiaryEntry } from './types';
-import { getAllDiaries, createDiary } from './services/diaries';
+import { getAllDiaries } from './services/diaries';
+import DiaryForm from './components/DiaryForm';
+import Diaries from './components/Diaries';
+import Notification from './components/Notification';
 
 function App() {
   const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
+  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     getAllDiaries().then((data) => setDiaries(data));
@@ -11,13 +15,13 @@ function App() {
 
   return (
     <>
-      <ul>
-        {diaries.map((diary) => (
-          <li key={diary.id}>
-            {diary.date} {diary.visibility} {diary.weather} {diary.comment}
-          </li>
-        ))}
-      </ul>
+      <Notification message={notification} />
+      <DiaryForm
+        diaries={diaries}
+        setDiaries={setDiaries}
+        setMessage={setNotification}
+      />
+      <Diaries diaries={diaries} />
     </>
   );
 }
