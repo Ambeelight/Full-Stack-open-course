@@ -10,7 +10,8 @@ const toNewPatientData = (object: unknown): NewPatientData => {
     'dateOfBirth' in object &&
     'ssn' in object &&
     'gender' in object &&
-    'occupation' in object
+    'occupation' in object &&
+    'entries' in object
   ) {
     const newData: NewPatientData = {
       name: parseName(object.name),
