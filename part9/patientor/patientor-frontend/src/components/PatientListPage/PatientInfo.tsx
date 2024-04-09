@@ -2,12 +2,13 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Diagnosis, Entry, Patient } from '../../types';
 import patientService from '../../services/patients';
-import diagnosesService from '../../services/diagnoses';
+import diagnosesService from '../..//services/diagnoses';
 import HealthCheck from './HealthCheck';
 import OccupationalHealthcare from './OccupationalHealthcare';
 import Hospital from './Hospital';
 import FemaleIcon from '@mui/icons-material/Female';
 import MaleIcon from '@mui/icons-material/Male';
+import EntryForm from './EntryForm';
 
 const PatientInfo = () => {
   const { id } = useParams();
@@ -29,15 +30,17 @@ const PatientInfo = () => {
 
     fetchPatient();
     fetchDiagnoses();
-  }, [id]);
+  }, [id, diagnoses]);
 
   if (patient === undefined) return <div>Patient not found</div>;
+  if (id === undefined) return <div>Id not found</div>;
+  if (diagnoses === undefined) return <div>Diagnoses not found</div>;
 
-  const findDiagnosisName = (code: string): string | undefined => {
-    const diagnosisName = diagnoses?.find((d) => d.code === code);
+  // const findDiagnosisName = (code: string): string | undefined => {
+  //   const diagnosisName = diagnoses?.find((d) => d.code === code);
 
-    return diagnosisName?.name;
-  };
+  //   return diagnosisName?.name;
+  // };
 
   const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
     switch (entry.type) {
@@ -61,6 +64,8 @@ const PatientInfo = () => {
       <p>occupation: {patient.occupation}</p>
       <h3>entries</h3>
       {patient.entries?.map((entry) => EntryDetails({ entry }))}
+
+      <EntryForm id={id} diagnoses={diagnoses} />
       {/* {patient.entries.map((e) => (
         <div key={e.id}>
           <p>

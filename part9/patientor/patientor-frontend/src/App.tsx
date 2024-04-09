@@ -20,6 +20,7 @@ const App = () => {
       const patients = await patientService.getAll();
       setPatients(patients);
     };
+
     void fetchPatientList();
   }, []);
 
