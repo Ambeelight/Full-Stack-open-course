@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import { Sequelize, QueryTypes, Model, DataTypes } from 'sequelize';
 
 const app = express();
+app.use(express.json());
 config();
 
 const sequelize = new Sequelize(
@@ -16,37 +17,37 @@ const sequelize = new Sequelize(
 );
 const PORT = process.env.PORT;
 
-// class Blog extends Model {}
-// Blog.init(
-//   {
-//     id: {
-//       type: DataTypes.INTEGER,
-//       primaryKey: true,
-//       autoIncrement: true,
-//     },
-//     author: {
-//       type: DataTypes.TEXT,
-//     },
-//     url: {
-//       type: DataTypes.TEXT,
-//       allowNull: false,
-//     },
-//     title: {
-//       type: DataTypes.TEXT,
-//       allowNull: false,
-//     },
-//     likes: {
-//       type: DataTypes.INTEGER,
-//       defaultValue: 0,
-//     },
-//   },
-//   {
-//     sequelize,
-//     underscored: true,
-//     timestamps: false,
-//     modelName: 'blog',
-//   }
-// );
+class Blog extends Model {}
+Blog.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    author: {
+      type: DataTypes.TEXT,
+    },
+    url: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    title: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    likes: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+  },
+  {
+    sequelize,
+    underscored: true,
+    timestamps: false,
+    modelName: 'blog',
+  }
+);
 
 app.get('/', async (req, res) => {
   const greeting = await 'Welcome';
@@ -55,16 +56,35 @@ app.get('/', async (req, res) => {
 
 app.get('/api/blogs', async (req, res) => {
   try {
-    const blogs = await sequelize.query('SELECT * FROM blogs', {
-      type: QueryTypes.SELECT,
-    });
-    // const blogs = await Blog.findAll();
+    // const blogs = await sequelize.query('SELECT * FROM blogs', {
+    //   type: QueryTypes.SELECT,
+    // });
+    const blogs = await Blog.findAll();
     console.log(blogs);
     res.json(blogs);
   } catch (error) {
     console.error('Unable to connect to the database:', error);
-  } finally {
-    await sequelize.close();
+  }
+});
+
+app.post('/api/blogs', async (req, res) => {
+  try {
+    const blog = await Blog.create(req.body);
+
+    return res.json(blog);
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
+});
+
+app.delete('/api/blogs/:id', async (req, res) => {
+  try {
+    const blog = await Blog.findByPk(req.params.id);
+    await blog.destroy();
+
+    return res.json({ message: 'The blog deleted successfully' });
+  } catch (error) {
+    return res.status(404).json({ error });
   }
 });
 
