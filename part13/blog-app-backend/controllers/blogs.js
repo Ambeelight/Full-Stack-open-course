@@ -1,7 +1,13 @@
 import express from 'express';
-import Blog from '../models/blog.js';
+import jwt from 'jsonwebtoken';
+import { config } from 'dotenv';
+
+import { User, Blog } from '../models/index.js';
 
 const router = express.Router();
+config();
+
+const SECRET = process.env.SECRET;
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
@@ -9,13 +15,39 @@ const blogFinder = async (req, res, next) => {
 };
 
 router.get('/', async (req, res) => {
-  const blogs = await Blog.findAll();
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ['userId'] },
+    include: {
+      model: User,
+      attributes: ['username', 'name'],
+    },
+  });
   console.log(blogs);
   res.json(blogs);
 });
 
-router.post('/', async (req, res) => {
-  const blog = await Blog.create(req.body);
+//token extractor
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    try {
+      console.log(authorization.substring(7));
+      console.log(SECRET);
+      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+    } catch (error) {
+      console.log(error);
+      return res.status(401).json({ error: 'token invalid' });
+    }
+  } else {
+    return res.status(401).json({ error: 'token missing' });
+  }
+
+  next();
+};
+
+router.post('/', tokenExtractor, async (req, res) => {
+  const user = await User.findByPk(req.decodedToken.id);
+  const blog = await Blog.create({ ...req.body, userId: user.id });
 
   return res.json(blog);
 });
@@ -28,10 +60,15 @@ router.get('/:id', blogFinder, async (req, res) => {
   }
 });
 
-router.delete('/:id', blogFinder, async (req, res) => {
-  await req.blog.destroy();
+router.delete('/:id', blogFinder, tokenExtractor, async (req, res) => {
+  const user = await User.findByPk(req.decodedToken.id);
 
-  return res.json({ message: 'The blog deleted successfully' });
+  if (user.id === req.blog.userId) {
+    await req.blog.destroy();
+    return res.json({ message: 'The blog deleted successfully' });
+  } else res.status(401).json({ message: 'Only author can delete the blog' });
+
+  res.status(500).json({ message: 'Internal server error' });
 });
 
 router.put('/:id', blogFinder, async (req, res) => {
