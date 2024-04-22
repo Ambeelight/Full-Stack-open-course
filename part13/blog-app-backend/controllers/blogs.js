@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
+import { Op } from 'sequelize';
 
 import { User, Blog } from '../models/index.js';
 
@@ -15,12 +16,31 @@ const blogFinder = async (req, res, next) => {
 };
 
 router.get('/', async (req, res) => {
+  const where = {};
+
+  if (req.query.search) {
+    where[Op.or] = [
+      {
+        title: {
+          [Op.substring]: req.query.search,
+        },
+      },
+      {
+        author: {
+          [Op.substring]: req.query.search,
+        },
+      },
+    ];
+  }
+
   const blogs = await Blog.findAll({
     attributes: { exclude: ['userId'] },
     include: {
       model: User,
       attributes: ['username', 'name'],
     },
+    where,
+    order: [['likes', 'DESC']],
   });
   console.log(blogs);
   res.json(blogs);
