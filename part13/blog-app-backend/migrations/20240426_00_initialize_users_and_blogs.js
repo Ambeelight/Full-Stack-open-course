@@ -9,6 +9,7 @@ const up = async ({ context: queryInterface }) => {
     },
     author: {
       type: DataTypes.TEXT,
+      allowNull: false,
     },
     url: {
       type: DataTypes.TEXT,

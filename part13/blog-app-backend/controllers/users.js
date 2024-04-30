@@ -1,17 +1,52 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import { User, Blog } from '../models/index.js';
+import { User, Blog, ReadingList } from '../models/index.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   const users = await User.findAll({
-    include: {
-      model: Blog,
-      attributes: { exclude: ['userId'] },
-    },
+    include: [
+      {
+        model: Blog,
+        attributes: { exclude: ['userId'] },
+      },
+      // {
+      //   model: Blog,
+      //   as: 'marked_blogs',
+      //   attributes: { exclude: ['userId'] },
+      //   through: {
+      //     attributes: [],
+      //   },
+      // },
+    ],
   });
   res.json(users);
+});
+
+router.get('/:id', async (req, res) => {
+  const user = await User.findByPk(req.params.id, {
+    include: [
+      {
+        model: Blog,
+        attributes: { exclude: ['userId'] },
+      },
+      {
+        model: Blog,
+        as: 'marked_blogs',
+        attributes: { exclude: ['userId'] },
+        through: {
+          attributes: [],
+        },
+      },
+    ],
+  });
+
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404).end();
+  }
 });
 
 router.post('/', async (req, res) => {

@@ -8,6 +8,7 @@ import blogsRouter from './controllers/blogs.js';
 import userRouter from './controllers/users.js';
 import loginRouter from './controllers/login.js';
 import authorRouter from './controllers/authors.js';
+import readingListsRouter from './controllers/readingLists.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/blogs', blogsRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/authors', authorRouter);
+app.use('/api/readinglists', readingListsRouter);
 
 const start = async () => {
   await connectToDB();

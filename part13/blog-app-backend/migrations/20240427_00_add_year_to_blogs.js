@@ -3,7 +3,7 @@ import { DataTypes } from 'sequelize';
 const up = async ({ context: queryInterface }) => {
   await queryInterface.addColumn('blogs', 'year', {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     validate: {
       min: 1991,
       max: new Date().getFullYear(),

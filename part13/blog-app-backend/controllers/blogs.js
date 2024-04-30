@@ -1,14 +1,10 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
-import { config } from 'dotenv';
 import { Op } from 'sequelize';
 
 import { User, Blog } from '../models/index.js';
+import { tokenExtractor } from '../util/middleware.js';
 
 const router = express.Router();
-config();
-
-const SECRET = process.env.SECRET;
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
@@ -45,25 +41,6 @@ router.get('/', async (req, res) => {
   console.log(blogs);
   res.json(blogs);
 });
-
-//token extractor
-const tokenExtractor = (req, res, next) => {
-  const authorization = req.get('authorization');
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    try {
-      console.log(authorization.substring(7));
-      console.log(SECRET);
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
-    } catch (error) {
-      console.log(error);
-      return res.status(401).json({ error: 'token invalid' });
-    }
-  } else {
-    return res.status(401).json({ error: 'token missing' });
-  }
-
-  next();
-};
 
 router.post('/', tokenExtractor, async (req, res) => {
   const user = await User.findByPk(req.decodedToken.id);
