@@ -6,9 +6,6 @@ User.hasMany(Blog);
 Blog.belongsTo(User);
 
 Blog.belongsToMany(User, { through: ReadingList, as: 'users_marked' });
-User.belongsToMany(Blog, { through: ReadingList, as: 'marked_blogs' });
-
-// Blog.sync({ alter: true });
-// User.sync({ alter: true });
+User.belongsToMany(Blog, { through: ReadingList, as: 'readings' });
 
 export { Blog, User, ReadingList };

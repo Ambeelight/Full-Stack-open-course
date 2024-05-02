@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import { User, Blog, ReadingList } from '../models/index.js';
+import { User, Blog } from '../models/index.js';
+import { Op } from 'sequelize';
 
 const router = express.Router();
 
@@ -11,42 +12,37 @@ router.get('/', async (req, res) => {
         model: Blog,
         attributes: { exclude: ['userId'] },
       },
-      // {
-      //   model: Blog,
-      //   as: 'marked_blogs',
-      //   attributes: { exclude: ['userId'] },
-      //   through: {
-      //     attributes: [],
-      //   },
-      // },
     ],
   });
   res.json(users);
 });
 
 router.get('/:id', async (req, res) => {
-  const user = await User.findByPk(req.params.id, {
+  const where = {};
+  const { id } = req.params;
+  const { read } = req.query;
+
+  if (read && read === 'true') {
+    where.read = true;
+  } else where.read = false;
+
+  const user = await User.findByPk(id, {
+    attributes: ['name', 'username'],
     include: [
       {
         model: Blog,
-        attributes: { exclude: ['userId'] },
-      },
-      {
-        model: Blog,
-        as: 'marked_blogs',
-        attributes: { exclude: ['userId'] },
+        as: 'readings',
+        attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
         through: {
-          attributes: [],
+          attributes: ['read', 'id'],
+          as: 'readinglists',
+          where,
         },
       },
     ],
   });
 
-  if (user) {
-    res.json(user);
-  } else {
-    res.status(404).end();
-  }
+  res.json(user);
 });
 
 router.post('/', async (req, res) => {
