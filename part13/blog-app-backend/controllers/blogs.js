@@ -1,8 +1,8 @@
 import express from 'express';
 import { Op } from 'sequelize';
 
-import { User, Blog } from '../models/index.js';
-import { tokenExtractor } from '../util/middleware.js';
+import { User, Blog, ActiveSession } from '../models/index.js';
+import { tokenExtractor, validToken } from '../util/middleware.js';
 
 const router = express.Router();
 
@@ -43,10 +43,14 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', tokenExtractor, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id);
-  const blog = await Blog.create({ ...req.body, userId: user.id });
+  const token = req.validToken;
+  const sessionToken = await ActiveSession.findOne({ where: { token } });
+  if (sessionToken) {
+    const user = await User.findByPk(req.decodedToken.id);
+    const blog = await Blog.create({ ...req.body, userId: user.id });
 
-  return res.json(blog);
+    return res.json(blog);
+  } else res.status(401).json({ message: 'Your token has been expired' });
 });
 
 router.get('/:id', blogFinder, async (req, res) => {
@@ -57,16 +61,28 @@ router.get('/:id', blogFinder, async (req, res) => {
   }
 });
 
-router.delete('/:id', blogFinder, tokenExtractor, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id);
+router.delete(
+  '/:id',
+  blogFinder,
+  tokenExtractor,
+  validToken,
+  async (req, res) => {
+    const token = req.validToken;
+    const sessionToken = await ActiveSession.findOne({ where: { token } });
 
-  if (user.id === req.blog.userId) {
-    await req.blog.destroy();
-    return res.json({ message: 'The blog deleted successfully' });
-  } else res.status(401).json({ message: 'Only author can delete the blog' });
+    if (sessionToken) {
+      const user = await User.findByPk(req.decodedToken.id);
 
-  res.status(500).json({ message: 'Internal server error' });
-});
+      if (user.id === req.blog.userId) {
+        await req.blog.destroy();
+        return res.json({ message: 'The blog deleted successfully' });
+      } else
+        res.status(401).json({ message: 'Only author can delete the blog' });
+
+      res.status(500).json({ message: 'Internal server error' });
+    } else res.status(401).json({ message: 'Your token has been expired' });
+  }
+);
 
 router.put('/:id', blogFinder, async (req, res) => {
   req.blog.likes = req.body.likes;

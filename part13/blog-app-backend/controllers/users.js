@@ -1,7 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import { User, Blog } from '../models/index.js';
-import { Op } from 'sequelize';
 
 const router = express.Router();
 

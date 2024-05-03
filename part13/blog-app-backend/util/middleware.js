@@ -23,4 +23,22 @@ const tokenExtractor = (req, res, next) => {
   next();
 };
 
-export { tokenExtractor };
+const validToken = (req, res, next) => {
+  const authorization = req.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    try {
+      console.log(authorization.substring(7));
+      const token = authorization.substring(7);
+      req.validToken = token;
+    } catch (error) {
+      console.log(error);
+      return res.status(401).json({ error: 'token invalid' });
+    }
+  } else {
+    return res.status(401).json({ error: 'token missing' });
+  }
+
+  next();
+};
+
+export { tokenExtractor, validToken };
